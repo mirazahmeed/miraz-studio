@@ -1,0 +1,38 @@
+export const projects = [
+  {
+    id: 1,
+    title: "E-Commerce Platform",
+    description: "A modern e-commerce platform with seamless shopping experience, real-time inventory management, and secure payment integration.",
+    techStack: ["Next.js", "React", "Tailwind CSS", "Stripe"],
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
+    liveDemo: "#",
+    github: "#",
+  },
+  {
+    id: 2,
+    title: "SaaS Dashboard",
+    description: "Analytics dashboard with data visualization, user management, and real-time updates using WebSockets.",
+    techStack: ["Next.js", "TypeScript", "Framer Motion", "Recharts"],
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+    liveDemo: "#",
+    github: "#",
+  },
+  {
+    id: 3,
+    title: "Portfolio Generator",
+    description: "A creative tool that allows users to build stunning portfolios with customizable themes and export options.",
+    techStack: ["React", "Node.js", "MongoDB", "AWS S3"],
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+    liveDemo: "#",
+    github: "#",
+  },
+  {
+    id: 4,
+    title: "Task Management App",
+    description: "Collaborative project management tool with real-time updates, drag-and-drop kanban boards, and team features.",
+    techStack: ["Next.js", "Prisma", "PostgreSQL", "Clerk"],
+    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop",
+    liveDemo: "#",
+    github: "#",
+  },
+];
