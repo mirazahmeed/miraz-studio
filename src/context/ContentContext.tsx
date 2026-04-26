@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import contentData from "@/data/content.json";
+import { fetchContent } from "@/lib/api";
+import { config } from "@/lib/config";
 
 export interface SiteContent {
   hero: {
@@ -31,15 +33,37 @@ export interface SiteContent {
 
 interface ContentContextType {
   content: SiteContent;
+  loading: boolean;
+  error: string | null;
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [content] = useState<SiteContent>(contentData as SiteContent);
+  const [content, setContent] = useState<SiteContent>(contentData as SiteContent);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadContent() {
+      if (config.useApi) {
+        try {
+          const data = await fetchContent();
+          setContent(data);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Failed to load content');
+          setContent(contentData as SiteContent);
+        }
+      } else {
+        setContent(contentData as SiteContent);
+      }
+      setLoading(false);
+    }
+    loadContent();
+  }, []);
 
   return (
-    <ContentContext.Provider value={{ content }}>
+    <ContentContext.Provider value={{ content, loading, error }}>
       {children}
     </ContentContext.Provider>
   );

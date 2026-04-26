@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import footerData from "@/data/footer.json";
+import { fetchContent } from "@/lib/api";
+import { config as appConfig } from "@/lib/config";
 
 export interface SocialLink {
   id: string;
@@ -33,15 +35,34 @@ export interface FooterConfig {
 
 interface FooterContextType {
   config: FooterConfig;
+  loading: boolean;
 }
 
 const FooterContext = createContext<FooterContextType | undefined>(undefined);
 
 export function FooterProvider({ children }: { children: ReactNode }) {
-  const [config] = useState<FooterConfig>(footerData as FooterConfig);
+  const [config, setConfig] = useState<FooterConfig>(footerData as FooterConfig);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFooter() {
+      if (appConfig.useApi) {
+        try {
+          const data = await fetchContent();
+          if (data.footer) {
+            setConfig(data.footer);
+          }
+        } catch {
+          // Fallback to static data
+        }
+      }
+      setLoading(false);
+    }
+    loadFooter();
+  }, [appConfig.useApi]);
 
   return (
-    <FooterContext.Provider value={{ config }}>
+    <FooterContext.Provider value={{ config, loading }}>
       {children}
     </FooterContext.Provider>
   );
