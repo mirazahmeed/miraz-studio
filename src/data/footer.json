@@ -1,0 +1,24 @@
+{
+  "logo": {
+    "text": "MIRAZ",
+    "highlight": "STUDIO",
+    "description": "A modern digital studio focused on designing and building scalable, user-centered web applications with clean architecture and thoughtful UI/UX."
+  },
+  "quickLinks": {
+    "visible": true
+  },
+  "socialLinks": [
+    { "id": "github", "name": "GitHub", "href": "#", "icon": "Github", "visible": true },
+    { "id": "linkedin", "name": "LinkedIn", "href": "#", "icon": "Linkedin", "visible": true },
+    { "id": "twitter", "name": "Twitter", "href": "#", "icon": "Twitter", "visible": true },
+    { "id": "instagram", "name": "Instagram", "href": "#", "icon": "Instagram", "visible": true }
+  ],
+  "copyright": {
+    "text": "All rights reserved.",
+    "showYear": true
+  },
+  "legalLinks": {
+    "privacy": { "visible": true, "text": "Privacy Policy" },
+    "terms": { "visible": true, "text": "Terms of Service" }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "hero": {
+    "tagline": "Digital Product & Web Development Studio",
+    "titleLine1": "We Build",
+    "titleLine2": "Digital",
+    "titleLine3": "Experiences",
+    "subtitle": "MIRAZSTUDIO is a modern digital studio focused on designing and building scalable, user-centered web applications with clean architecture and thoughtful UI/UX.",
+    "ctaPrimary": "View Projects",
+    "ctaSecondary": "Contact Us"
+  },
+  "about": {
+    "subtitle": "About Us",
+    "title": "Crafting Premium",
+    "highlightTitle": "Digital Solutions",
+    "paragraphs": [
+      "MIRAZSTUDIO is a modern digital studio focused on designing and building scalable, user-centered web applications.",
+      "We believe in the power of clean architecture, where every line of code serves a purpose. Our approach combines technical excellence with creative innovation to deliver products that not only work flawlessly but also provide exceptional user experiences.",
+      "From performance optimization to thoughtful UI/UX design, we handle every aspect of your digital presence with meticulous attention to detail."
+    ],
+    "stats": [
+      { "value": "5+", "label": "Years Experience" },
+      { "value": "50+", "label": "Projects Delivered" },
+      { "value": "30+", "label": "Happy Clients" }
+    ],
+    "skills": ["React", "Next.js", "TypeScript", "Node.js", "UI/UX"]
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Contact Us",
+    "description": "Have a project in mind? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "info": [
+      { "label": "Email", "value": "hello@mirazstudio.com" },
+      { "label": "Phone", "value": "+1 (555) 123-4567" },
+      { "label": "Location", "value": "San Francisco, CA" }
+    ]
+  }
+}

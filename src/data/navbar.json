@@ -1,0 +1,19 @@
+{
+  "logo": {
+    "text": "MIRAZ",
+    "highlight": "STUDIO"
+  },
+  "cta": {
+    "text": "Let's Talk",
+    "visible": true
+  },
+  "items": [
+    { "id": "about", "name": "About", "href": "#about", "visible": true, "order": 1 },
+    { "id": "services", "name": "Services", "href": "#services", "visible": true, "order": 2 },
+    { "id": "projects", "name": "Projects", "href": "#projects", "visible": true, "order": 3 },
+    { "id": "contact", "name": "Contact", "href": "#contact", "visible": true, "order": 4 }
+  ],
+  "mobileMenu": {
+    "enabled": true
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 import Section, { SectionHeader } from "../ui/Section";
 import Button from "@/components/ui/Button";
 import { useContent } from "@/context/ContentContext";
@@ -16,6 +16,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function Contact() {
   const { content } = useContent();
   const { contact } = content;
+  const formspreeUrl = process.env.NEXT_PUBLIC_FORMSPREE_URL || "";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,16 +38,36 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus("idle");
 
-    console.log("Form submitted:", formData);
+    try {
+      const response = await fetch(formspreeUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
 
-    setTimeout(() => {
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => setSubmitStatus("idle"), 5000);
+      } else {
+        setSubmitStatus("error");
+        setTimeout(() => setSubmitStatus("idle"), 5000);
+      }
+    } catch (error) {
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+    } finally {
       setIsSubmitting(false);
-      setSubmitStatus("success");
-      setFormData({ name: "", email: "", message: "" });
-      
-      setTimeout(() => setSubmitStatus("idle"), 3000);
-    }, 1500);
+    }
   };
 
   return (
@@ -142,10 +163,21 @@ export default function Contact() {
               />
             </div>
 
+            {submitStatus === "error" && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 text-red-400 text-sm"
+              >
+                <AlertCircle size={16} />
+                Failed to send message. Please try again or email directly.
+              </motion.div>
+            )}
+
             <Button
               type="submit"
               size="lg"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formspreeUrl}
               className="w-full"
             >
               {isSubmitting ? (
@@ -159,7 +191,7 @@ export default function Contact() {
                 </span>
               ) : submitStatus === "success" ? (
                 <span className="flex items-center gap-2">
-                  <Send size={18} />
+                  <CheckCircle size={18} />
                   Message Sent!
                 </span>
               ) : (
