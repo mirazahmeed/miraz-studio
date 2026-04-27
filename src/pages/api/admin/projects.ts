@@ -35,8 +35,8 @@ export default async function handler(
   }
 
   if (req.method === 'DELETE') {
-    const { id } = req.query;
-    await prisma.project.delete({ where: { id: Number(id) } });
+    const id = Number(req.query.id || req.body?.id);
+    await prisma.project.delete({ where: { id } });
     return res.json({ success: true });
   }
 
