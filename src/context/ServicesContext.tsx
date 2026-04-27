@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import servicesData from "@/data/services.json";
 import { fetchServices } from "@/lib/api";
-import { config } from "@/lib/config";
 
 export interface Service {
   id: number;
@@ -29,18 +28,16 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadServices() {
-      if (config.useApi) {
-        try {
-          const data = await fetchServices();
-          setServices(data);
-        } catch (e) {
-          setError(e instanceof Error ? e.message : 'Failed to load services');
-          setServices(servicesData);
-        }
-      } else {
+      try {
+        const data = await fetchServices();
+        setServices(data);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to load services');
+        // Fallback to static data if API fails
         setServices(servicesData);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     loadServices();
   }, []);

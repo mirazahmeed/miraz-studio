@@ -5,13 +5,20 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === 'GET') {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
     const services = await prisma.service.findMany({
       where: { visible: true },
       orderBy: { order: 'asc' },
     });
-    return res.json(services);
-  }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return res.json(services);
+  } catch (error) {
+    console.error('Failed to fetch services:', error);
+    return res.status(500).json({ error: 'Failed to fetch services' });
+  }
 }
