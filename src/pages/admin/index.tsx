@@ -22,7 +22,9 @@ import {
   fetchAdminContent,
   updateService,
   updateProject,
-  updateContent
+  updateContent,
+  createProject,
+  deleteProject
 } from "@/lib/api";
 
 interface Service {
@@ -48,6 +50,10 @@ interface Project {
 
 type Tab = "services" | "projects" | "content" | "settings";
 
+function isProject(item: Service | Project | null): item is Project {
+  return !!item && 'image' in item && 'techStack' in item;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("services");
@@ -56,7 +62,7 @@ export default function AdminDashboard() {
   const [content, setContent] = useState<Record<string, unknown>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | "new" | null>(null);
   const [editData, setEditData] = useState<Service | Project | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
@@ -107,11 +113,16 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSaveProject = async () => {
+    const handleSaveProject = async () => {
     if (!editData || !token) return;
     setSaving(true);
     try {
-      await updateProject(token, editData);
+      // If id is 0, it's a new project
+      if (editData.id === 0) {
+        await createProject(token, editData);
+      } else {
+        await updateProject(token, editData);
+      }
       await loadData();
       setEditingId(null);
       setEditData(null);
@@ -122,7 +133,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleToggleVisibility = async (type: "service" | "project", id: number, current: boolean) => {
+   const handleToggleVisibility = async (type: "service" | "project", id: number, current: boolean) => {
     if (!token) return;
     const data = { id, visible: !current };
     try {
@@ -134,6 +145,16 @@ export default function AdminDashboard() {
       await loadData();
     } catch (err) {
       console.error("Failed to toggle:", err);
+    }
+  };
+
+  const handleDeleteProject = async (id: number) => {
+    if (!token) return;
+    try {
+      await deleteProject(token, id);
+      await loadData();
+    } catch (err) {
+      console.error("Failed to delete project:", err);
     }
   };
 
@@ -273,13 +294,147 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {tab === "projects" && (
+{tab === "projects" && (
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white">Projects</h2>
+              <button
+                onClick={() => {
+                  setEditingId('new');
+                  setEditData({
+                    id: 0,
+                    title: '',
+                    description: '',
+                    techStack: [],
+                    image: '',
+                    liveDemo: '',
+                    github: '',
+                    order: 0,
+                    visible: true
+                  } as Service | Project);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg"
+              >
+                <Plus className="w-4 h-4" />
+                New Project
+              </button>
             </div>
 
             <div className="grid gap-4">
+              {editingId === 'new' && editData && (
+                <motion.div
+                  className="bg-[#141414] border border-white/10 rounded-xl p-4"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <div className="space-y-4">
+                    <h3 className="text-white font-semibold text-lg">New Project</h3>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Title</label>
+                      <input
+                        type="text"
+                        value={editData.title || ""}
+                        onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="Project Title"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Description</label>
+                      <textarea
+                        value={editData.description || ""}
+                        onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="Project Description"
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Image URL</label>
+                      <input
+                        type="text"
+                        value={(editData as Project).image || ""}
+                        onChange={(e) => setEditData({ ...editData, image: e.target.value } as Service | Project)}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="https://example.com/image.jpg"
+                      />
+                      {(editData as Project).image && (
+                        <img src={(editData as Project).image} alt="Preview" className="mt-2 h-32 object-cover rounded-lg" />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Tech Stack (comma-separated)</label>
+                      <input
+                        type="text"
+                        value={(editData as Project).techStack?.join(", ") || ""}
+                        onChange={(e) => setEditData({ ...editData, techStack: e.target.value.split(",").map(t => t.trim()).filter(Boolean) } as Service | Project)}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="React, Node.js, PostgreSQL"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Live Demo URL</label>
+                      <input
+                        type="text"
+                        value={(editData as Project).liveDemo || ""}
+                        onChange={(e) => setEditData({ ...editData, liveDemo: e.target.value } as Service | Project)}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="https://example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">GitHub URL</label>
+                      <input
+                        type="text"
+                        value={(editData as Project).github || ""}
+                        onChange={(e) => setEditData({ ...editData, github: e.target.value } as Service | Project)}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="https://github.com/username/repo"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white/70 text-sm mb-1">Order</label>
+                      <input
+                        type="number"
+                        value={(editData as Project).order || 0}
+                        onChange={(e) => setEditData({ ...editData, order: parseInt(e.target.value) || 0 } as Service | Project)}
+                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={(editData as Project).visible || false}
+                        onChange={(e) => setEditData({ ...editData, visible: e.target.checked } as Service | Project)}
+                        className="w-4 h-4"
+                        id="visible-new"
+                      />
+                      <label htmlFor="visible-new" className="text-white/70 text-sm">Visible</label>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveProject}
+                        disabled={saving}
+                        className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg"
+                      >
+                        <Save className="w-4 h-4" />
+                        {saving ? "Saving..." : "Create Project"}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditData(null);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg"
+                      >
+                        <X className="w-4 h-4" />
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
               {projects.map((project) => (
                 <motion.div
                   key={project.id}
@@ -287,20 +442,93 @@ export default function AdminDashboard() {
                 >
                   {editingId === project.id ? (
                     <div className="space-y-4">
-                      <input
-                        type="text"
-                        value={editData?.title || ""}
-                        onChange={(e) => setEditData({ ...editData!, title: e.target.value })}
-                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
-                        placeholder="Title"
-                      />
-                      <textarea
-                        value={editData?.description || ""}
-                        onChange={(e) => setEditData({ ...editData!, description: e.target.value })}
-                        className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
-                        placeholder="Description"
-                        rows={3}
-                      />
+                      <div>
+                        <label className="block text-white/70 text-sm mb-1">Title</label>
+                        <input
+                          type="text"
+                          value={editData?.title || ""}
+                          onChange={(e) => setEditData({ ...editData!, title: e.target.value })}
+                          className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                          placeholder="Project Title"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-white/70 text-sm mb-1">Description</label>
+                        <textarea
+                          value={editData?.description || ""}
+                          onChange={(e) => setEditData({ ...editData!, description: e.target.value })}
+                          className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                          placeholder="Project Description"
+                          rows={3}
+                        />
+                      </div>
+                      {isProject(editData) && (
+                        <>
+                          <div>
+                            <label className="block text-white/70 text-sm mb-1">Image URL</label>
+                            <input
+                              type="text"
+                              value={(editData as Project).image || ""}
+                              onChange={(e) => setEditData({ ...editData!, image: e.target.value } as Service | Project)}
+                              className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                              placeholder="https://example.com/image.jpg"
+                            />
+                            {(editData as Project).image && (
+                              <img src={(editData as Project).image} alt="Preview" className="mt-2 h-32 object-cover rounded-lg" />
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-white/70 text-sm mb-1">Tech Stack (comma-separated)</label>
+                            <input
+                              type="text"
+                              value={(editData as Project).techStack?.join(", ") || ""}
+                              onChange={(e) => setEditData({ ...editData!, techStack: e.target.value.split(",").map(t => t.trim()).filter(Boolean) } as Service | Project)}
+                              className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                              placeholder="React, Node.js, PostgreSQL"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-white/70 text-sm mb-1">Live Demo URL</label>
+                            <input
+                              type="text"
+                              value={(editData as Project).liveDemo || ""}
+                              onChange={(e) => setEditData({ ...editData!, liveDemo: e.target.value } as Service | Project)}
+                              className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                              placeholder="https://example.com"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-white/70 text-sm mb-1">GitHub URL</label>
+                            <input
+                              type="text"
+                              value={(editData as Project).github || ""}
+                              onChange={(e) => setEditData({ ...editData!, github: e.target.value } as Service | Project)}
+                              className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                              placeholder="https://github.com/username/repo"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-white/70 text-sm mb-1">Order</label>
+                            <input
+                              type="number"
+                              value={(editData as Project).order || 0}
+                              onChange={(e) => setEditData({ ...editData!, order: parseInt(e.target.value) || 0 } as Service | Project)}
+                              className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                              placeholder="0"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(editData as Project).visible || false}
+                              onChange={(e) => setEditData({ ...editData!, visible: e.target.checked } as Service | Project)}
+                              className="w-4 h-4"
+                              id="visible"
+                            />
+                            <label htmlFor="visible" className="text-white/70 text-sm">Visible</label>
+                          </div>
+                        </>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={handleSaveProject}
@@ -320,38 +548,76 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-white font-semibold">{project.title}</h3>
-                        <p className="text-[#A3A3A3] text-sm mt-1">{project.description}</p>
-                        <div className="flex gap-2 mt-2">
-                          {project.techStack?.map((tech) => (
-                            <span
-                              key={tech}
-                              className="px-2 py-1 bg-white/10 text-white/70 text-xs rounded"
-                            >
-                              {tech}
-                            </span>
-                          ))}
+                    <div className="flex gap-4">
+                      {'image' in project && project.image && (
+                        <div className="w-32 h-24 flex-shrink-0">
+                          <img 
+                            src={project.image} 
+                            alt={project.title} 
+                            className="w-full h-full object-cover rounded-lg"
+                          />
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleToggleVisibility("project", project.id, project.visible)}
-                          className="p-2 text-[#525252] hover:text-white transition-colors"
-                        >
-                          {project.visible ? (
-                            <Eye className="w-4 h-4" />
-                          ) : (
-                            <EyeOff className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => startEdit(project)}
-                          className="p-2 text-[#525252] hover:text-white transition-colors"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-white font-semibold">{project.title}</h3>
+                            <p className="text-[#A3A3A3] text-sm mt-1">{project.description}</p>
+                            <div className="flex gap-2 mt-2">
+                              {project.techStack?.map((tech) => (
+                                <span
+                                  key={tech}
+                                  className="px-2 py-1 bg-white/10 text-white/70 text-xs rounded"
+                                >
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                            {(project.liveDemo || project.github) && (
+                              <div className="flex gap-3 mt-2 text-xs">
+                                {project.liveDemo && (
+                                  <a href={project.liveDemo} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                                    Live Demo ↗
+                                  </a>
+                                )}
+                                {project.github && (
+                                  <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white">
+                                    GitHub ↗
+                                  </a>
+                                )}
+                              </div>
+                            )}
+                            <p className="text-white/30 text-xs mt-2">Order: {project.order}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleToggleVisibility("project", project.id, project.visible)}
+                              className="p-2 text-[#525252] hover:text-white transition-colors"
+                            >
+                              {project.visible ? (
+                                <Eye className="w-4 h-4" />
+                              ) : (
+                                <EyeOff className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => startEdit(project)}
+                              className="p-2 text-[#525252] hover:text-white transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this project?')) {
+                                  handleDeleteProject(project.id);
+                                }
+                              }}
+                              className="p-2 text-[#dc2626] hover:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}

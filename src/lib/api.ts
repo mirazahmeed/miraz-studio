@@ -78,6 +78,32 @@ export async function updateProject(token: string, data: unknown) {
   return res.json();
 }
 
+export async function createProject(token: string, data: unknown) {
+  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Failed to create project');
+  return res.json();
+}
+
+export async function deleteProject(token: string, id: number) {
+  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ id }),
+  });
+  if (!res.ok) throw new Error('Failed to delete project');
+  return res.json();
+}
+
 export async function updateContent(token: string, key: string, value: unknown) {
   const res = await fetch(`${API_BASE}/api/admin/content`, {
     method: 'PUT',
