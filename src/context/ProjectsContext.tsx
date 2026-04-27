@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import projectsData from "@/data/projects.json";
 import { fetchProjects } from "@/lib/api";
+import { config } from "@/lib/config";
 
 export interface Project {
   id: number;
@@ -30,14 +32,18 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadProjects() {
-      try {
-        const data = await fetchProjects();
-        setProjects(data);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load projects');
-      } finally {
-        setLoading(false);
+      if (config.useApi) {
+        try {
+          const data = await fetchProjects();
+          setProjects(data);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Failed to load projects');
+          setProjects(projectsData);
+        }
+      } else {
+        setProjects(projectsData);
       }
+      setLoading(false);
     }
     loadProjects();
   }, []);

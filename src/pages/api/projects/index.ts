@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,16 +10,10 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  try {
-    const projects = await prisma.project.findMany({
-      where: { visible: true },
-      orderBy: { order: 'asc' },
-    });
+  const projects = await prisma.project.findMany({
+    where: { visible: true },
+    orderBy: { order: 'asc' },
+  });
 
-    res.setHeader('Cache-Control', 'no-store, max-age=0');
-    return res.json(projects);
-  } catch (error) {
-    console.error('Failed to fetch projects:', error);
-    return res.status(500).json({ error: 'Failed to fetch projects' });
-  }
+  return res.json(projects);
 }

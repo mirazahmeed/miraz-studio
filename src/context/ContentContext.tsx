@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import contentData from "@/data/content.json";
 import { fetchContent } from "@/lib/api";
+import { config } from "@/lib/config";
 
 export interface SiteContent {
   hero: {
@@ -45,16 +46,18 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadContent() {
-      try {
-        const data = await fetchContent();
-        setContent(data);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load content');
-        // Fallback to static data if API fails
+      if (config.useApi) {
+        try {
+          const data = await fetchContent();
+          setContent(data);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Failed to load content');
+          setContent(contentData as SiteContent);
+        }
+      } else {
         setContent(contentData as SiteContent);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     }
     loadContent();
   }, []);
