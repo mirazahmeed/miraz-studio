@@ -11,6 +11,7 @@ export default async function handler(
     for (const item of contents) {
       data[item.key] = item.value;
     }
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     return res.json(data);
   }
 

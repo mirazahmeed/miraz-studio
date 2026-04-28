@@ -6,11 +6,12 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'GET') {
-    const services = await prisma.service.findMany({
-      where: { visible: true },
-      orderBy: { order: 'asc' },
-    });
-    return res.json(services);
+const services = await prisma.service.findMany({
+    where: { visible: true },
+    orderBy: { order: 'asc' },
+  });
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  return res.json(services);
   }
 
   return res.status(405).json({ error: 'Method not allowed' });

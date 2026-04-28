@@ -15,5 +15,6 @@ export default async function handler(
     orderBy: { order: 'asc' },
   });
 
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   return res.json(projects);
 }
