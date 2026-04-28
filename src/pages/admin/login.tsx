@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { login } from "@/lib/api";
@@ -97,9 +98,9 @@ export default function AdminLogin() {
         </form>
 
         <p className="text-center mt-6 text-sm text-[#525252]">
-          <a href="/" className="hover:text-white transition-colors">
+          <Link href="/" className="hover:text-white transition-colors">
             ← Back to site
-          </a>
+          </Link>
         </p>
       </motion.div>
     </div>
