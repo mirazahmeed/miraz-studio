@@ -32,15 +32,19 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function loadProjects() {
+      console.log('[ProjectsContext] useApi:', config.useApi, 'apiBaseUrl:', config.apiBaseUrl);
       if (config.useApi) {
         try {
           const data = await fetchProjects();
+          console.log('[ProjectsContext] Loaded from API:', data.length, 'projects');
           setProjects(data);
         } catch (e) {
+          console.error('[ProjectsContext] API Error:', e);
           setError(e instanceof Error ? e.message : 'Failed to load projects');
           setProjects(projectsData);
         }
       } else {
+        console.log('[ProjectsContext] Using static JSON data');
         setProjects(projectsData);
       }
       setLoading(false);

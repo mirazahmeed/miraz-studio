@@ -8,7 +8,11 @@ export async function fetchServices() {
 
 export async function fetchProjects() {
   const res = await fetch(`${API_BASE}/api/projects`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('Failed to fetch projects');
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('API Error:', res.status, error);
+    throw new Error('Failed to fetch projects');
+  }
   return res.json();
 }
 
