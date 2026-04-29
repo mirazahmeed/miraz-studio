@@ -1,7 +1,11 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
+function buildUrl(path: string) {
+  return API_BASE ? `${API_BASE}${path}` : path;
+}
+
 export async function fetchServices() {
-  const url = `${API_BASE}/api/services`;
+  const url = buildUrl('/api/services');
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) {
     console.error('fetchServices:', res.status, url);
@@ -11,7 +15,7 @@ export async function fetchServices() {
 }
 
 export async function fetchProjects() {
-  const url = `${API_BASE}/api/projects`;
+  const url = buildUrl('/api/projects');
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) {
     console.error('fetchProjects:', res.status, url);
@@ -21,7 +25,7 @@ export async function fetchProjects() {
 }
 
 export async function fetchContent() {
-  const url = `${API_BASE}/api/content`;
+  const url = buildUrl('/api/content');
   const res = await fetch(url, { cache: 'no-store' });
   if (!res.ok) {
     console.error('fetchContent:', res.status, url);
@@ -31,7 +35,8 @@ export async function fetchContent() {
 }
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${API_BASE}/api/auth/login`, {
+  const url = buildUrl('/api/auth/login');
+  const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -41,7 +46,8 @@ export async function login(email: string, password: string) {
 }
 
 export async function fetchAdminServices(token: string) {
-  const res = await fetch(`${API_BASE}/api/admin/services`, {
+  const url = buildUrl('/api/admin/services');
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to fetch services');
@@ -49,7 +55,8 @@ export async function fetchAdminServices(token: string) {
 }
 
 export async function fetchAdminProjects(token: string) {
-  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+  const url = buildUrl('/api/admin/projects');
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to fetch projects');
@@ -57,7 +64,8 @@ export async function fetchAdminProjects(token: string) {
 }
 
 export async function fetchAdminContent(token: string) {
-  const res = await fetch(`${API_BASE}/api/admin/content`, {
+  const url = buildUrl('/api/admin/content');
+  const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('Failed to fetch content');
@@ -65,7 +73,8 @@ export async function fetchAdminContent(token: string) {
 }
 
 export async function updateService(token: string, data: unknown) {
-  const res = await fetch(`${API_BASE}/api/admin/services`, {
+  const url = buildUrl('/api/admin/services');
+  const res = await fetch(url, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -78,7 +87,8 @@ export async function updateService(token: string, data: unknown) {
 }
 
 export async function updateProject(token: string, data: unknown) {
-  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+  const url = buildUrl('/api/admin/projects');
+  const res = await fetch(url, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -91,7 +101,8 @@ export async function updateProject(token: string, data: unknown) {
 }
 
 export async function createProject(token: string, data: unknown) {
-  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+  const url = buildUrl('/api/admin/projects');
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -104,7 +115,8 @@ export async function createProject(token: string, data: unknown) {
 }
 
 export async function deleteProject(token: string, id: number) {
-  const res = await fetch(`${API_BASE}/api/admin/projects`, {
+  const url = buildUrl('/api/admin/projects');
+  const res = await fetch(url, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -117,7 +129,8 @@ export async function deleteProject(token: string, id: number) {
 }
 
 export async function updateContent(token: string, key: string, value: unknown) {
-  const res = await fetch(`${API_BASE}/api/admin/content`, {
+  const url = buildUrl('/api/admin/content');
+  const res = await fetch(url, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
