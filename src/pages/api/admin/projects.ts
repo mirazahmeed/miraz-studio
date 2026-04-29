@@ -19,19 +19,58 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
-    const project = await prisma.project.create({
-      data: req.body,
-    });
-    return res.json(project);
+    const { title, description, image, techStack, liveDemo, github, order, visible } = req.body;
+
+    if (!title || !description || !image) {
+      return res.status(400).json({ error: 'Title, description, and image are required' });
+    }
+
+    try {
+      const project = await prisma.project.create({
+        data: {
+          title,
+          description,
+          image,
+          techStack: techStack || [],
+          liveDemo,
+          github,
+          order: order || 0,
+          visible: visible ?? true,
+        },
+      });
+      return res.json(project);
+    } catch (error) {
+      console.error('Failed to create project:', error);
+      return res.status(500).json({ error: 'Failed to create project' });
+    }
   }
 
   if (req.method === 'PUT') {
-    const { id, ...data } = req.body;
-    const project = await prisma.project.update({
-      where: { id: Number(id) },
-      data,
-    });
-    return res.json(project);
+    const { id, title, description, image, techStack, liveDemo, github, order, visible } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: 'Project ID is required' });
+    }
+
+    try {
+      const project = await prisma.project.update({
+        where: { id: Number(id) },
+        data: {
+          ...(title && { title }),
+          ...(description && { description }),
+          ...(image && { image }),
+          ...(techStack && { techStack }),
+          ...(liveDemo !== undefined && { liveDemo }),
+          ...(github !== undefined && { github }),
+          ...(order !== undefined && { order }),
+          ...(visible !== undefined && { visible }),
+        },
+      });
+      return res.json(project);
+    } catch (error) {
+      console.error('Failed to update project:', error);
+      return res.status(500).json({ error: 'Failed to update project' });
+    }
   }
 
   if (req.method === 'DELETE') {
