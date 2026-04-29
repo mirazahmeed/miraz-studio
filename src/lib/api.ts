@@ -1,7 +1,10 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 
 function buildUrl(path: string) {
-  return API_BASE ? `${API_BASE}${path}` : path;
+  if (!API_BASE || API_BASE === '' || API_BASE === '""' || API_BASE === "''") {
+    return path;
+  }
+  return `${API_BASE}${path}`;
 }
 
 export async function fetchServices() {
