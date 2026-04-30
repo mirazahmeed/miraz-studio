@@ -14,7 +14,8 @@ import {
   Eye,
   EyeOff,
   Save,
-  X
+  X,
+  MessageSquare
 } from "lucide-react";
 import { 
   fetchAdminServices, 
@@ -24,7 +25,8 @@ import {
   updateProject,
   updateContent,
   createProject,
-  deleteProject
+  deleteProject,
+  fetchContent
 } from "@/lib/api";
 
 interface Service {
@@ -48,7 +50,7 @@ interface Project {
   visible: boolean;
 }
 
-type Tab = "services" | "projects" | "content" | "settings";
+type Tab = "services" | "projects" | "content" | "contact" | "settings";
 
 function isProject(item: Service | Project | null): item is Project {
   return !!item && 'image' in item && 'techStack' in item;
@@ -64,6 +66,13 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<number | "new" | null>(null);
   const [editData, setEditData] = useState<Service | Project | null>(null);
+  const [contactData, setContactData] = useState({
+    title: "",
+    subtitle: "",
+    description: "",
+    info: [] as { label: string; value: string }[],
+  });
+  const [contactSaving, setContactSaving] = useState(false);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
 
@@ -85,6 +94,11 @@ export default function AdminDashboard() {
       setServices(srv);
       setProjects(proj);
       setContent(cont);
+      
+      const siteContent = await fetchContent();
+      if (siteContent.contact) {
+        setContactData(siteContent.contact);
+      }
     } catch (err) {
       console.error("Failed to load data:", err);
     } finally {
@@ -168,6 +182,40 @@ export default function AdminDashboard() {
     setEditData(null);
   };
 
+  const handleSaveContact = async () => {
+    if (!token) return;
+    setContactSaving(true);
+    try {
+      await updateContent(token, "contact", contactData);
+      alert("Contact section saved successfully!");
+    } catch (err) {
+      console.error("Failed to save contact:", err);
+      alert("Failed to save contact section");
+    } finally {
+      setContactSaving(false);
+    }
+  };
+
+  const handleAddContactInfo = () => {
+    setContactData({
+      ...contactData,
+      info: [...contactData.info, { label: "New Field", value: "" }],
+    });
+  };
+
+  const handleRemoveContactInfo = (index: number) => {
+    setContactData({
+      ...contactData,
+      info: contactData.info.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleUpdateContactInfo = (index: number, field: "label" | "value", value: string) => {
+    const newInfo = [...contactData.info];
+    newInfo[index] = { ...newInfo[index], [field]: value };
+    setContactData({ ...contactData, info: newInfo });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">
@@ -188,6 +236,7 @@ export default function AdminDashboard() {
           {[
             { id: "services" as Tab, icon: FileText, label: "Services" },
             { id: "projects" as Tab, icon: Briefcase, label: "Projects" },
+            { id: "contact" as Tab, icon: MessageSquare, label: "Contact" },
             { id: "content" as Tab, icon: Settings, label: "Content" },
           ].map(({ id, icon: Icon, label }) => (
             <button
@@ -633,6 +682,110 @@ export default function AdminDashboard() {
             <p className="text-[#A3A3A3]">
               Content editing coming soon. Edit content directly in the JSON files or via API.
             </p>
+          </div>
+        )}
+
+        {tab === "contact" && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">Contact Section</h2>
+              <button
+                onClick={handleSaveContact}
+                disabled={contactSaving}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg"
+              >
+                <Save className="w-4 h-4" />
+                {contactSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+
+            <div className="space-y-6 max-w-2xl">
+              <div className="bg-[#141414] border border-white/10 rounded-xl p-6">
+                <h3 className="text-white font-semibold mb-4">Header Content</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-white/70 text-sm mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={contactData.title}
+                      onChange={(e) => setContactData({ ...contactData, title: e.target.value })}
+                      className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                      placeholder="Get in Touch"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/70 text-sm mb-1">Subtitle</label>
+                    <input
+                      type="text"
+                      value={contactData.subtitle}
+                      onChange={(e) => setContactData({ ...contactData, subtitle: e.target.value })}
+                      className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                      placeholder="Let's work together"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white/70 text-sm mb-1">Description</label>
+                    <textarea
+                      value={contactData.description}
+                      onChange={(e) => setContactData({ ...contactData, description: e.target.value })}
+                      className="w-full px-4 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white"
+                      placeholder="Description text"
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#141414] border border-white/10 rounded-xl p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-white font-semibold">Contact Info</h3>
+                  <button
+                    onClick={handleAddContactInfo}
+                    className="flex items-center gap-1 px-3 py-1 text-sm bg-white/10 text-white rounded-lg hover:bg-white/20"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Field
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {contactData.info.map((item, index) => (
+                    <div key={index} className="flex gap-4 items-start">
+                      <div className="flex-1">
+                        <label className="block text-white/50 text-xs mb-1">Label</label>
+                        <input
+                          type="text"
+                          value={item.label}
+                          onChange={(e) => handleUpdateContactInfo(index, "label", e.target.value)}
+                          className="w-full px-3 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white text-sm"
+                          placeholder="Email"
+                        />
+                      </div>
+                      <div className="flex-[2]">
+                        <label className="block text-white/50 text-xs mb-1">Value</label>
+                        <input
+                          type="text"
+                          value={item.value}
+                          onChange={(e) => handleUpdateContactInfo(index, "value", e.target.value)}
+                          className="w-full px-3 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white text-sm"
+                          placeholder="hello@example.com"
+                        />
+                      </div>
+                      <button
+                        onClick={() => handleRemoveContactInfo(index)}
+                        className="mt-6 p-2 text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {contactData.info.length === 0 && (
+                    <p className="text-white/40 text-sm text-center py-4">
+                      No contact info fields. Click &quot;Add Field&quot; to add one.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
