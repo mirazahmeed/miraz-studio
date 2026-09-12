@@ -43,7 +43,7 @@ export async function submitContactMessage(
       };
     }
 
-    await prisma.contactMessage.create({
+    const createdLead = await prisma.contactMessage.create({
       data: {
         name: validated.data.name,
         email: validated.data.email,
@@ -55,6 +55,15 @@ export async function submitContactMessage(
         status: "new",
       },
     });
+
+    // Notify Telegram Bot asynchronously.
+    // Database operation succeeded; Telegram failure must NEVER rollback or fail the lead submission.
+    try {
+      const { sendStudioNewLeadNotification } = await import("@/lib/telegram");
+      await sendStudioNewLeadNotification(createdLead);
+    } catch (telegramErr) {
+      console.error("[Contact Action] Failed to send Telegram notification:", telegramErr);
+    }
 
     return {
       success: true,
