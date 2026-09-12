@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --background-subtle: #f8f8f7;
+  --background-muted: #f2f2f0;
+  --foreground: #111111;
+  --foreground-muted: #6e6e73;
+  --foreground-subtle: #8e8e93;
+  --border: #e6e6e4;
+  --border-light: #f0f0ee;
+  --accent-blue: #2563eb;
+  --accent-red: #ef4444;
+  --accent-amber: #eab308;
+  --accent-emerald: #10b981;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Editorial Typography Helpers */
+.meta-tag {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--foreground-muted);
+}
+
+.hairline-border-t {
+  border-top: 1px solid var(--border);
+}
+
+.hairline-border-b {
+  border-bottom: 1px solid var(--border);
+}
+
+.hairline-border-r {
+  border-right: 1px solid var(--border);
+}
+
+.hairline-border-l {
+  border-left: 1px solid var(--border);
+}
+
+.hairline-border {
+  border: 1px solid var(--border);
+}
+
+/* Subtle corner mark */
+.corner-plus {
+  position: relative;
+}
+
+.corner-plus::before {
+  content: "+";
+  position: absolute;
+  top: -10px;
+  left: -8px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #a1a1aa;
+  pointer-events: none;
+}
+
+/* Container constraints matching reference */
+.studio-container {
+  width: 100%;
+  max-width: 1520px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (min-width: 768px) {
+  .studio-container {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .studio-container {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+}
+
+/* Selection */
+::selection {
+  background-color: #111111;
+  color: #ffffff;
+}
