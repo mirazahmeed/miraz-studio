@@ -100,7 +100,7 @@ export default async function HomePage() {
         <SelectedWorkSection projects={allProjects} />
 
         {/* 9. Services & Capabilities */}
-        <ServicesSection services={services} />
+        <ServicesSection projects={allProjects} />
 
         {/* 10. Proof, Certifications & Testimonials */}
         <ProofAndTestimonials testimonials={testimonials} />
