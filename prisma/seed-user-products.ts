@@ -204,10 +204,54 @@ const products = [
     solution:
       "A blazing-fast, secure file utility suite that guarantees 100% confidentiality, zero cloud bandwidth costs, and instant local processing.",
   },
+  {
+    title: "ETHEREA — Luxury Botanical Skincare",
+    slug: "etherea",
+    subtitle: "Editorial high-end botanical skincare e-commerce with testing sandbox & MongoDB Atlas admin dashboard",
+    excerpt:
+      "An editorial, high-end botanical skincare e-commerce web application featuring a curated storefront, interactive ingredient showcases, and customer rituals.",
+    description:
+      "An editorial, high-end botanical skincare e-commerce web application featuring a curated storefront, interactive ingredient showcases, and customer rituals. It includes a slide-out botanical cart drawer, customer profile and order history portal (/profile), a buyer/client testing sandbox (/testing-admin), and a secure store administration dashboard (/admin) for live product catalogue, inventory, and order fulfillment management backed by MongoDB Atlas.",
+    technologies: JSON.stringify([
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "MongoDB",
+      "Framer Motion",
+      "Lucide React",
+      "Canvas Confetti",
+      "Node.js",
+    ]),
+    liveUrl: null,
+    githubUrl: "https://github.com/mirazahmeed/etherea",
+    heroImage: "/projects/etherea.png",
+    featured: true,
+    category: "WEBSITES",
+    type: "BOTANICAL E-COMMERCE",
+    role: "FULL-STACK ARCHITECTURE / UI/UX / BACKEND",
+    client: "Etherea Botanicals",
+    year: "2026",
+    sortOrder: 7,
+    specifications: JSON.stringify({
+      cart: "Slide-Out Botanical Cart Drawer",
+      portal: "Customer Profile & Order History (/profile)",
+      sandbox: "Buyer / Client Testing Sandbox (/testing-admin)",
+      admin: "Store Administration & Inventory Dashboard (/admin)",
+      database: "MongoDB Atlas Cluster",
+      motion: "Framer Motion & Canvas Confetti Celebrations",
+    }),
+    challenge:
+      "Creating a sensory, editorial beauty buying experience while ensuring robust cart persistence, customer account management, and real-time inventory administration.",
+    approach:
+      "Constructed an integrated full-stack Next.js application backed by MongoDB Atlas with dedicated client testing sandboxes and seamless drawer shopping.",
+    solution:
+      "A luxury e-commerce platform blending serene aesthetic pacing with complete administrative power, real-time inventory management, and zero customer friction.",
+  },
 ];
 
 async function main() {
-  console.log("Upserting user's 6 real products into SQLite database...");
+  console.log("Upserting user's real products into SQLite database...");
 
   // Delete obsolete placeholder seed projects if they exist
   const obsoleteSlugs = [
@@ -217,6 +261,8 @@ async function main() {
     "aura-atelier",
     "kinetic-capital",
     "chroma-monograph",
+    "fexion",
+    "roselyra",
   ];
   await prisma.project.deleteMany({
     where: {
@@ -232,83 +278,6 @@ async function main() {
     });
     console.log(`Upserted: ${p.title} (${p.slug})`);
   }
-
-  // Also ensure fexion & roselyra shorthand slugs point to the real products or exist as redirects/aliases
-  await prisma.project.upsert({
-    where: { slug: "fexion" },
-    update: {
-      title: "Project Fission (Fexion)",
-      subtitle: "Modern, responsive fashion e-commerce storefront",
-      excerpt: "A modern, responsive fashion e-commerce web application focused on clean UI and brand-driven design.",
-      description: "A modern, responsive fashion e-commerce web application focused on clean UI, strong visual hierarchy, and brand-driven design. Built with React and Tailwind CSS, the project showcases product collections, best sellers, and customer engagement sections.",
-      technologies: JSON.stringify(["React", "Tailwind CSS", "JavaScript"]),
-      liveUrl: "https://fission.surge.sh/",
-      githubUrl: "https://github.com/mirazahmeed/fission",
-      heroImage: "/projects/fission.png",
-      featured: false,
-      category: "WEBSITES",
-      type: "FASHION E-COMMERCE",
-      role: "FRONTEND ENGINEERING / UI DESIGN",
-      client: "Fission Apparel",
-      year: "2026",
-      sortOrder: 99,
-    },
-    create: {
-      title: "Project Fission (Fexion)",
-      slug: "fexion",
-      subtitle: "Modern, responsive fashion e-commerce storefront",
-      excerpt: "A modern, responsive fashion e-commerce web application focused on clean UI and brand-driven design.",
-      description: "A modern, responsive fashion e-commerce web application focused on clean UI, strong visual hierarchy, and brand-driven design. Built with React and Tailwind CSS, the project showcases product collections, best sellers, and customer engagement sections.",
-      technologies: JSON.stringify(["React", "Tailwind CSS", "JavaScript"]),
-      liveUrl: "https://fission.surge.sh/",
-      githubUrl: "https://github.com/mirazahmed/fission",
-      heroImage: "/projects/fission.png",
-      featured: false,
-      category: "WEBSITES",
-      type: "FASHION E-COMMERCE",
-      role: "FRONTEND ENGINEERING / UI DESIGN",
-      client: "Fission Apparel",
-      year: "2026",
-      sortOrder: 99,
-    },
-  });
-
-  await prisma.project.upsert({
-    where: { slug: "roselyra" },
-    update: {
-      title: "ROSELYRA Fashion",
-      subtitle: "High-fashion e-commerce platform with Stripe checkout, Firebase auth & admin dashboard",
-      excerpt: "A modern fashion e-commerce platform built with Next.js 14, featuring product collections, categories, and curated browsing.",
-      description: "A modern fashion e-commerce platform built with Next.js 14, featuring product collections, categories, and curated browsing. Includes shopping cart with drawer UI, wishlist, user authentication (Firebase + JWT), order management, and Stripe-powered checkout flow.",
-      technologies: JSON.stringify(["Next.js", "Firebase", "Stripe", "Tailwind CSS", "MongoDB"]),
-      liveUrl: "https://roselyra-fashion.vercel.app/",
-      heroImage: "/projects/roselyra.png",
-      featured: false,
-      category: "WEBSITES",
-      type: "FULL-STACK E-COMMERCE",
-      role: "FULL-STACK ARCHITECTURE / UI/UX",
-      client: "Roselyra Paris",
-      year: "2026",
-      sortOrder: 98,
-    },
-    create: {
-      title: "ROSELYRA Fashion",
-      slug: "roselyra",
-      subtitle: "High-fashion e-commerce platform with Stripe checkout, Firebase auth & admin dashboard",
-      excerpt: "A modern fashion e-commerce platform built with Next.js 14, featuring product collections, categories, and curated browsing.",
-      description: "A modern fashion e-commerce platform built with Next.js 14, featuring product collections, categories, and curated browsing. Includes shopping cart with drawer UI, wishlist, user authentication (Firebase + JWT), order management, and Stripe-powered checkout flow.",
-      technologies: JSON.stringify(["Next.js", "Firebase", "Stripe", "Tailwind CSS", "MongoDB"]),
-      liveUrl: "https://roselyra-fashion.vercel.app/",
-      heroImage: "/projects/roselyra.png",
-      featured: false,
-      category: "WEBSITES",
-      type: "FULL-STACK E-COMMERCE",
-      role: "FULL-STACK ARCHITECTURE / UI/UX",
-      client: "Roselyra Paris",
-      year: "2026",
-      sortOrder: 98,
-    },
-  });
 
   console.log("All real products successfully synchronized!");
 }
