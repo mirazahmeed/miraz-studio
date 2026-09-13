@@ -30,11 +30,22 @@ interface ServicesSectionProps {
 
 export function ServicesSection({ projects = [] }: ServicesSectionProps) {
   // Find database projects by slug with fallbacks to public images
-  const fexionProject = projects.find((p) => p.slug === "fexion");
-  const roselyraProject = projects.find((p) => p.slug === "roselyra");
+  const fexionProject = projects.find(
+    (p) =>
+      p.slug === "project-fission-fashion-e-commerce-web-app" ||
+      p.slug === "fexion"
+  );
+  const roselyraProject = projects.find(
+    (p) => p.slug === "roselyra-fashion" || p.slug === "roselyra"
+  );
   const ethereaProject = projects.find((p) => p.slug === "etherea");
 
-  const fexionImg = fexionProject?.heroImage || "/projects/fexion.png";
+  const fexionSlug =
+    fexionProject?.slug || "project-fission-fashion-e-commerce-web-app";
+  const roselyraSlug = roselyraProject?.slug || "roselyra-fashion";
+  const ethereaSlug = ethereaProject?.slug || "etherea";
+
+  const fexionImg = fexionProject?.heroImage || "/projects/fission.png";
   const roselyraImg = roselyraProject?.heroImage || "/projects/roselyra.png";
   const ethereaImg = ethereaProject?.heroImage || "/projects/etherea.png";
 
@@ -112,7 +123,7 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
             {/* Lower Area: Real Project Proof (FEXION Browser Showcase) */}
             <div className="relative mt-auto">
               <Link
-                href="/work/fexion"
+                href={`/work/${fexionSlug}`}
                 className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] rounded-2xl"
                 aria-label="View Fexion project case study"
               >
@@ -153,7 +164,7 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
             {/* Lower Area: Real Project Proof (ROSELYRA Product Design Presentation) */}
             <div className="relative mt-auto">
               <Link
-                href="/work/roselyra"
+                href={`/work/${roselyraSlug}`}
                 className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] rounded-2xl"
                 aria-label="View Roselyra product design case study"
               >
@@ -194,7 +205,7 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
             {/* Lower Area: Layered Real Project Proof (Roselyra + Etherea) */}
             <div className="relative mt-auto">
               <Link
-                href="/work/roselyra"
+                href={`/work/${roselyraSlug}`}
                 className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] rounded-2xl"
                 aria-label="View E-commerce case studies"
               >
