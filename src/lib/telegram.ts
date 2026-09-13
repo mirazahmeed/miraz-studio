@@ -234,37 +234,59 @@ export function isAuthorizedAdmin(chatId: string | number): boolean {
  * Generates the Studio Dashboard message text & keyboard.
  */
 export async function getStudioDashboardData() {
-  const [newLeadsCount, activeProjectsCount, totalProjectsCount] = await Promise.all([
-    prisma.contactMessage.count({ where: { status: "new" } }),
-    prisma.project.count({ where: { status: "PUBLISHED" } }),
-    prisma.project.count(),
-  ]);
+  try {
+    const [newLeadsCount, activeProjectsCount, totalProjectsCount] = await Promise.all([
+      prisma.contactMessage.count({ where: { status: "new" } }),
+      prisma.project.count({ where: { status: "PUBLISHED" } }),
+      prisma.project.count(),
+    ]);
 
-  const body = [
-    `🚀 <b>New Leads:</b> ${newLeadsCount}`,
-    `📁 <b>Active Projects:</b> ${activeProjectsCount}`,
-    `🗄 <b>Total Case Studies:</b> ${totalProjectsCount}`,
-  ].join("\n");
+    const body = [
+      `🚀 <b>New Leads:</b> ${newLeadsCount}`,
+      `📁 <b>Active Projects:</b> ${activeProjectsCount}`,
+      `🗄 <b>Total Case Studies:</b> ${totalProjectsCount}`,
+    ].join("\n");
 
-  const text = formatStudioTelegramMessage({
-    title: "STUDIO DASHBOARD",
-    body,
-  });
+    const text = formatStudioTelegramMessage({
+      title: "STUDIO DASHBOARD",
+      body,
+    });
 
-  const replyMarkup = {
-    inline_keyboard: [
-      [
-        { text: "🚀 Leads", callback_data: "studio:leads:1" },
-        { text: "📁 Projects", callback_data: "studio:projects:1" },
+    const replyMarkup = {
+      inline_keyboard: [
+        [
+          { text: "🚀 Leads", callback_data: "studio:leads:1" },
+          { text: "📁 Projects", callback_data: "studio:projects:1" },
+        ],
+        [
+          { text: "🔄 Refresh", callback_data: "studio:dashboard" },
+          { text: "⬅️ Back", callback_data: "personal:menu" },
+        ],
       ],
-      [
-        { text: "🔄 Refresh", callback_data: "studio:dashboard" },
-        { text: "⬅️ Back", callback_data: "personal:menu" },
-      ],
-    ],
-  };
+    };
 
-  return { text, replyMarkup };
+    return { text, replyMarkup };
+  } catch (err: any) {
+    console.error("[Studio Telegram] getStudioDashboardData error:", err.message);
+    const body = [
+      `⚠️ <b>Studio Database Warning</b>`,
+      `Live metrics temporarily unavailable.`,
+      `<i>Detail: ${escapeHtml(err.message || "Database connection pending initialization")}</i>`,
+    ].join("\n\n");
+
+    const text = formatStudioTelegramMessage({
+      title: "STUDIO DASHBOARD",
+      body,
+    });
+
+    const replyMarkup = {
+      inline_keyboard: [
+        [{ text: "🔄 Retry", callback_data: "studio:dashboard" }],
+      ],
+    };
+
+    return { text, replyMarkup };
+  }
 }
 
 /**
@@ -274,63 +296,77 @@ export async function getStudioLeadsData(page: number = 1) {
   const pageSize = 5;
   const skip = (page - 1) * pageSize;
 
-  const [leads, totalCount] = await Promise.all([
-    prisma.contactMessage.findMany({
-      skip,
-      take: pageSize,
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.contactMessage.count(),
-  ]);
+  try {
+    const [leads, totalCount] = await Promise.all([
+      prisma.contactMessage.findMany({
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.contactMessage.count(),
+    ]);
 
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
-  let body = "";
-  if (leads.length === 0) {
-    body = "No leads found in registry.";
-  } else {
-    body = leads
-      .map((lead, idx) => {
-        const itemNumber = skip + idx + 1;
-        let statusEmoji = "🟡 New";
-        if (lead.status === "read") statusEmoji = "🟢 Read";
-        if (lead.status === "archived") statusEmoji = "🔴 Archived";
-        if (lead.status === "replied") statusEmoji = "🔵 Replied";
+    let body = "";
+    if (leads.length === 0) {
+      body = "No leads found in registry.";
+    } else {
+      body = leads
+        .map((lead, idx) => {
+          const itemNumber = skip + idx + 1;
+          let statusEmoji = "🟡 New";
+          if (lead.status === "read") statusEmoji = "🟢 Read";
+          if (lead.status === "archived") statusEmoji = "🔴 Archived";
+          if (lead.status === "replied") statusEmoji = "🔵 Replied";
 
-        return `${itemNumber}. <b>${escapeHtml(lead.name)}</b>\n   ${escapeHtml(
-          lead.projectType || "General Inquiry"
-        )}\n   ${statusEmoji}`;
-      })
-      .join("\n\n");
+          return `${itemNumber}. <b>${escapeHtml(lead.name)}</b>\n   ${escapeHtml(
+            lead.projectType || "General Inquiry"
+          )}\n   ${statusEmoji}`;
+        })
+        .join("\n\n");
+    }
+
+    const text = formatStudioTelegramMessage({
+      title: `🚀 RECENT LEADS (Page ${page}/${totalPages})`,
+      body,
+    });
+
+    const navButtons = [];
+    if (page > 1) {
+      navButtons.push({ text: "⬅️ Prev", callback_data: `studio:leads:${page - 1}` });
+    }
+    if (page < totalPages) {
+      navButtons.push({ text: "Next ➡️", callback_data: `studio:leads:${page + 1}` });
+    }
+
+    // Row for individual detail inspection if leads exist
+    const detailButtons = leads.slice(0, 3).map((l, i) => ({
+      text: `👁 #${skip + i + 1}`,
+      callback_data: `studio:lead:view:${l.id}`,
+    }));
+
+    const inlineKeyboard: any[][] = [];
+    if (detailButtons.length > 0) inlineKeyboard.push(detailButtons);
+    if (navButtons.length > 0) inlineKeyboard.push(navButtons);
+    inlineKeyboard.push([
+      { text: "📊 Dashboard", callback_data: "studio:dashboard" },
+    ]);
+
+    return { text, replyMarkup: { inline_keyboard: inlineKeyboard } };
+  } catch (err: any) {
+    console.error("[Studio Telegram] getStudioLeadsData error:", err.message);
+    const text = formatStudioTelegramMessage({
+      title: "🚀 RECENT LEADS",
+      body: `⚠️ <i>Unable to load leads: ${escapeHtml(err.message)}</i>`,
+    });
+    return {
+      text,
+      replyMarkup: {
+        inline_keyboard: [[{ text: "📊 Dashboard", callback_data: "studio:dashboard" }]],
+      },
+    };
   }
-
-  const text = formatStudioTelegramMessage({
-    title: `🚀 RECENT LEADS (Page ${page}/${totalPages})`,
-    body,
-  });
-
-  const navButtons = [];
-  if (page > 1) {
-    navButtons.push({ text: "⬅️ Prev", callback_data: `studio:leads:${page - 1}` });
-  }
-  if (page < totalPages) {
-    navButtons.push({ text: "Next ➡️", callback_data: `studio:leads:${page + 1}` });
-  }
-
-  // Row for individual detail inspection if leads exist
-  const detailButtons = leads.slice(0, 3).map((l, i) => ({
-    text: `👁 #${skip + i + 1}`,
-    callback_data: `studio:lead:view:${l.id}`,
-  }));
-
-  const inlineKeyboard: any[][] = [];
-  if (detailButtons.length > 0) inlineKeyboard.push(detailButtons);
-  if (navButtons.length > 0) inlineKeyboard.push(navButtons);
-  inlineKeyboard.push([
-    { text: "📊 Dashboard", callback_data: "studio:dashboard" },
-  ]);
-
-  return { text, replyMarkup: { inline_keyboard: inlineKeyboard } };
 }
 
 /**
@@ -340,57 +376,71 @@ export async function getStudioProjectsData(page: number = 1) {
   const pageSize = 5;
   const skip = (page - 1) * pageSize;
 
-  const [projects, totalCount] = await Promise.all([
-    prisma.project.findMany({
-      skip,
-      take: pageSize,
-      orderBy: { sortOrder: "asc" },
-      select: { id: true, title: true, type: true, status: true },
-    }),
-    prisma.project.count(),
-  ]);
+  try {
+    const [projects, totalCount] = await Promise.all([
+      prisma.project.findMany({
+        skip,
+        take: pageSize,
+        orderBy: { sortOrder: "asc" },
+        select: { id: true, title: true, type: true, status: true },
+      }),
+      prisma.project.count(),
+    ]);
 
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+    const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
-  let body = "";
-  if (projects.length === 0) {
-    body = "No projects in registry.";
-  } else {
-    body = projects
-      .map((p, idx) => {
-        const itemNumber = skip + idx + 1;
-        const statusEmoji =
-          p.status === "PUBLISHED"
-            ? "🟢 Active"
-            : p.status === "DRAFT"
-            ? "🟡 Draft"
-            : "🔵 Archived";
+    let body = "";
+    if (projects.length === 0) {
+      body = "No projects in registry.";
+    } else {
+      body = projects
+        .map((p, idx) => {
+          const itemNumber = skip + idx + 1;
+          const statusEmoji =
+            p.status === "PUBLISHED"
+              ? "🟢 Active"
+              : p.status === "DRAFT"
+              ? "🟡 Draft"
+              : "🔵 Archived";
 
-        return `${itemNumber}. <b>${escapeHtml(p.title)}</b>\n   ${escapeHtml(
-          p.type
-        )}\n   ${statusEmoji}`;
-      })
-      .join("\n\n");
+          return `${itemNumber}. <b>${escapeHtml(p.title)}</b>\n   ${escapeHtml(
+            p.type
+          )}\n   ${statusEmoji}`;
+        })
+        .join("\n\n");
+    }
+
+    const text = formatStudioTelegramMessage({
+      title: `📁 PROJECTS (Page ${page}/${totalPages})`,
+      body,
+    });
+
+    const navButtons = [];
+    if (page > 1) {
+      navButtons.push({ text: "⬅️ Prev", callback_data: `studio:projects:${page - 1}` });
+    }
+    if (page < totalPages) {
+      navButtons.push({ text: "Next ➡️", callback_data: `studio:projects:${page + 1}` });
+    }
+
+    const inlineKeyboard: any[][] = [];
+    if (navButtons.length > 0) inlineKeyboard.push(navButtons);
+    inlineKeyboard.push([
+      { text: "📊 Dashboard", callback_data: "studio:dashboard" },
+    ]);
+
+    return { text, replyMarkup: { inline_keyboard: inlineKeyboard } };
+  } catch (err: any) {
+    console.error("[Studio Telegram] getStudioProjectsData error:", err.message);
+    const text = formatStudioTelegramMessage({
+      title: "📁 PROJECTS",
+      body: `⚠️ <i>Unable to load projects: ${escapeHtml(err.message)}</i>`,
+    });
+    return {
+      text,
+      replyMarkup: {
+        inline_keyboard: [[{ text: "📊 Dashboard", callback_data: "studio:dashboard" }]],
+      },
+    };
   }
-
-  const text = formatStudioTelegramMessage({
-    title: `📁 PROJECTS (Page ${page}/${totalPages})`,
-    body,
-  });
-
-  const navButtons = [];
-  if (page > 1) {
-    navButtons.push({ text: "⬅️ Prev", callback_data: `studio:projects:${page - 1}` });
-  }
-  if (page < totalPages) {
-    navButtons.push({ text: "Next ➡️", callback_data: `studio:projects:${page + 1}` });
-  }
-
-  const inlineKeyboard: any[][] = [];
-  if (navButtons.length > 0) inlineKeyboard.push(navButtons);
-  inlineKeyboard.push([
-    { text: "📊 Dashboard", callback_data: "studio:dashboard" },
-  ]);
-
-  return { text, replyMarkup: { inline_keyboard: inlineKeyboard } };
 }

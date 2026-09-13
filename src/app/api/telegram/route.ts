@@ -31,8 +31,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let update: any = null;
   try {
-    const update = await req.json();
+    update = await req.json();
 
     // 2. Handle Callback Query (Button clicks)
     if (update.callback_query) {
@@ -345,8 +346,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: "ok" });
   } catch (err: any) {
     console.error("[Studio Telegram] Error processing update:", err.message);
+
+    try {
+      if (typeof update !== "undefined") {
+        const chatId = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
+        if (chatId) {
+          await sendTelegramMessage({
+            chatId,
+            text: formatStudioErrorMessage(`Studio error: ${err.message || "Internal server error"}`),
+          });
+        }
+      }
+    } catch {
+      // Ignore notification failures in error handler
+    }
+
     return NextResponse.json(
-      { error: "Internal processing error" },
+      { error: "Internal processing error", message: err?.message },
       { status: 500 }
     );
   }
