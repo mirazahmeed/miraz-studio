@@ -11,7 +11,7 @@ interface FooterProps {
 export function Footer({
   studioName = "MIRAZ STUDIO™",
   tagline = "DESIGNING AND BUILDING DIGITAL EXPERIENCES WITH INTENTION.",
-  email = "hello@miraz.studio",
+  email = "mirazahmed0619@gmail.com",
   location = "DHAKA / AVAILABLE GLOBALLY",
 }: FooterProps) {
   return (

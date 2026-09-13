@@ -9,7 +9,7 @@ export const revalidate = 60;
 export default async function ContactPage() {
   const settings = await getSiteSettings();
 
-  const email = settings["contact_email"] || "hello@miraz.studio";
+  const email = settings["contact_email"] || "mirazahmed0619@gmail.com";
   const location = settings["contact_location"] || "DHAKA / AVAILABLE GLOBALLY";
   const availability =
     settings["contact_availability"] || "ACCEPTING SELECT PROJECTS FOR Q2/Q3 2026";

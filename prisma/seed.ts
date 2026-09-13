@@ -63,7 +63,7 @@ async function main() {
       key: "about_bio",
       value: "Miraz Studio is an independent creative engineering practice founded by Miraz Ahmed. We specialize in bespoke digital products, high-performance web applications, and architectural design systems. By bridging rigorous aesthetics with full-stack engineering, we build products that solve real business problems without sacrificing an ounce of visual sophistication.",
     },
-    { key: "contact_email", value: "hello@miraz.studio" },
+    { key: "contact_email", value: "mirazahmed0619@gmail.com" },
     { key: "contact_location", value: "DHAKA / AVAILABLE GLOBALLY" },
     { key: "contact_availability", value: "ACCEPTING SELECT PROJECTS FOR Q2/Q3 2026" },
     { key: "social_github", value: "https://github.com/mirazahmed" },

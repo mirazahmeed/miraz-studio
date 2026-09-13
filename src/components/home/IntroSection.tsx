@@ -13,7 +13,7 @@ export function IntroSection({
   label = "01 / INTRODUCTION",
   statement = "WE DON'T JUST BUILD WEBSITES. WE ENGINEER DIGITAL PRODUCTS PEOPLE REMEMBER.",
   bio = "Miraz Studio is an independent creative engineering practice. We specialize in bespoke digital products, high-performance web applications, and architectural design systems. By bridging rigorous aesthetics with full-stack engineering, we build products that solve real business problems without sacrificing an ounce of visual sophistication.",
-  email = "hello@miraz.studio",
+  email = "mirazahmed0619@gmail.com",
   location = "DHAKA / AVAILABLE GLOBALLY",
 }: IntroSectionProps) {
   return (

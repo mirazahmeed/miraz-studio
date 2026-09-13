@@ -194,7 +194,7 @@ export default async function AdminSettingsPage() {
               <input
                 type="email"
                 name="contact_email"
-                defaultValue={settings["contact_email"] || "hello@miraz.studio"}
+                defaultValue={settings["contact_email"] || "mirazahmed0619@gmail.com"}
                 className="w-full px-4 py-3 bg-white border border-[#E6E6E4] text-[#111111] text-[14px] focus:outline-none focus:border-[#111111] rounded-[2px]"
               />
             </div>
