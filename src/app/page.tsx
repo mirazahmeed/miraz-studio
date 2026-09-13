@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsRow } from "@/components/home/StatsRow";
-import { IntroSection } from "@/components/home/IntroSection";
+import { StudioStorySection } from "@/components/home/StudioStorySection";
 import { FeaturedProjectSection } from "@/components/home/FeaturedProjectSection";
 import { WhyWorkWithMe } from "@/components/home/WhyWorkWithMe";
 import { VisualBreaker } from "@/components/home/VisualBreaker";
@@ -70,9 +70,9 @@ export default async function HomePage() {
         {/* 2. 4-Column Stats Row */}
         <StatsRow stats={stats} />
 
-        {/* 3. Intro / Positioning Section */}
-        <IntroSection
-          label={settings["about_label"]}
+        {/* 3. Interactive Studio Story / About Section */}
+        <StudioStorySection
+          label={settings["about_label"] || "About Miraz Studio"}
           statement={settings["about_statement"]}
           bio={settings["about_bio"]}
           email={settings["contact_email"]}
