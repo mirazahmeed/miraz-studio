@@ -31,14 +31,14 @@ export function StudioStorySection({
 
   const storyCards = [
     {
-      id: "mission",
+      id: "belief",
       number: "01",
       numberBadge: "1",
-      title: "Our Mission",
-      headlineLead: "We craft thoughtful digital experiences",
-      headlineMuted: "that solve real problems, elevate brands, and create lasting value.",
+      title: "What I Believe",
+      headlineLead: "Great software is not mere decoration.",
+      headlineMuted: "It is architectural clarity, fast execution, and purposeful engineering.",
       description:
-        "Every product we build is designed with purpose, clarity, and measurable impact. Bridging rigorous aesthetics with full-stack engineering to eliminate digital noise.",
+        "I believe digital products should evoke tranquility while codebases maintain uncompromising rigor. By eliminating gratuitous noise and transient trends, I build focused interfaces and scalable systems that solve real business problems.",
       Artwork: MissionArtwork,
     },
     {
@@ -46,25 +46,25 @@ export function StudioStorySection({
       number: "02",
       numberBadge: "2",
       title: "Why Miraz Studio",
-      headlineLead: "We don't stop at making things look good.",
-      headlineMuted: "We engineer products built around real goals and longevity.",
+      headlineLead: "Design and engineering under one roof.",
+      headlineMuted: "Zero telephone game, rapid execution, and direct senior ownership.",
       description:
-        "By pairing bespoke UI/UX design with production-grade Next.js development and AI automation, we eliminate the translation gap between design and code. Zero bloat, direct senior collaboration.",
+        "I don't just draft mockups in Figma. I engineer the full-stack architecture in Next.js and integrate modern AI automation. You collaborate directly with the senior creator building your product—ensuring sub-second performance, maintainability, and total alignment.",
       Artwork: WhyStudioArtwork,
     },
     {
-      id: "work",
+      id: "proof",
       number: "03",
       numberBadge: "3",
-      title: "Our Work",
+      title: "Proof",
       headlineLead: "Real systems verified in production.",
-      headlineMuted: "Not just static mockups or empty promises.",
+      headlineMuted: "Every case study is backed by live websites, public repositories, and benchmarks.",
       description:
-        "From high-performance web applications to scalable design systems, every project in our registry is something you can test, inspect, and verify directly in production.",
+        "No fabricated testimonials or phantom metrics. Explore production web applications, open-source codebases, and custom digital products that you can test, inspect, and verify directly in production.",
       Artwork: WorkArtwork,
       cta: {
         href: "/work",
-        text: "Explore all work",
+        text: "Explore verified work",
       },
     },
   ];
