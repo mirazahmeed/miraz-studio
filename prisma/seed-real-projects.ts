@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Upserting real projects: FEXION, ROSELYRA, ETHEREA...");
+  console.log("Upserting real projects: FEXION, ROSELYRA...");
 
   // 1. FEXION (Web Design & Development / E-commerce)
   await prisma.project.upsert({
@@ -128,68 +128,6 @@ async function main() {
       approach: "Crafted an asymmetric typography system paired with curated photo matrices, subtle hover reveals, and high-craft device frames.",
       solution: "An editorial digital experience that turns browsing into an art-book experience, boosting user engagement and time on site.",
       caseStudyUrl: "/work/roselyra",
-    },
-  });
-
-  // 3. ETHEREA (Interactive Experiences / Skincare Flagship)
-  await prisma.project.upsert({
-    where: { slug: "etherea" },
-    update: {
-      title: "ETHEREA",
-      subtitle: "Clean botanical beauty and organic skincare digital flagship",
-      excerpt: "Immersive skincare flagship with soft organic aesthetics, interactive product highlights, and serene customer journeys.",
-      description: "Etherea is an organic skincare and beauty digital sanctuary. Crafted with soft pastel tones, fluid botanical transitions, interactive ingredient breakdowns, and customer testimonial carousels to reflect natural purity.",
-      year: "2026",
-      client: "Etherea Organics",
-      type: "BEAUTY & SKINCARE E-COMMERCE",
-      role: "INTERACTIVE EXPERIENCES & FRONTEND",
-      duration: "2 MONTHS",
-      status: "PUBLISHED",
-      featured: true,
-      sortOrder: 3,
-      category: "WEBSITES",
-      heroImage: "/projects/etherea.png",
-      technologies: JSON.stringify(["NEXT.JS 15", "INTERACTIVE MOTION", "TAILWIND CSS", "HEADLESS COMMERCE", "GSAP / FRAMER"]),
-      specifications: JSON.stringify({
-        aesthetic: "Serene Botanical Minimalist",
-        interaction: "Smooth Scroll & Ingredient Interactive Hotspots",
-        speed: "100 Lighthouse Best Practices",
-        retention: "+52% Average Session Duration",
-        storytelling: "End-to-End Ingredient Provenance",
-      }),
-      challenge: "Skincare buyers need reassurance on ingredients, purity, and scientific backing before purchasing, which standard product pages fail to convey.",
-      approach: "Structured the flagship page as an unfolding story—from purity claims to interactive product highlights, community reviews, and FAQs.",
-      solution: "A serene, calming digital presence that builds trust and elevates average order values through transparent visual education.",
-      caseStudyUrl: "/work/etherea",
-    },
-    create: {
-      title: "ETHEREA",
-      slug: "etherea",
-      subtitle: "Clean botanical beauty and organic skincare digital flagship",
-      excerpt: "Immersive skincare flagship with soft organic aesthetics, interactive product highlights, and serene customer journeys.",
-      description: "Etherea is an organic skincare and beauty digital sanctuary. Crafted with soft pastel tones, fluid botanical transitions, interactive ingredient breakdowns, and customer testimonial carousels to reflect natural purity.",
-      year: "2026",
-      client: "Etherea Organics",
-      type: "BEAUTY & SKINCARE E-COMMERCE",
-      role: "INTERACTIVE EXPERIENCES & FRONTEND",
-      duration: "2 MONTHS",
-      status: "PUBLISHED",
-      featured: true,
-      sortOrder: 3,
-      category: "WEBSITES",
-      heroImage: "/projects/etherea.png",
-      technologies: JSON.stringify(["NEXT.JS 15", "INTERACTIVE MOTION", "TAILWIND CSS", "HEADLESS COMMERCE", "GSAP / FRAMER"]),
-      specifications: JSON.stringify({
-        aesthetic: "Serene Botanical Minimalist",
-        interaction: "Smooth Scroll & Ingredient Interactive Hotspots",
-        speed: "100 Lighthouse Best Practices",
-        retention: "+52% Average Session Duration",
-        storytelling: "End-to-End Ingredient Provenance",
-      }),
-      challenge: "Skincare buyers need reassurance on ingredients, purity, and scientific backing before purchasing, which standard product pages fail to convey.",
-      approach: "Structured the flagship page as an unfolding story—from purity claims to interactive product highlights, community reviews, and FAQs.",
-      solution: "A serene, calming digital presence that builds trust and elevates average order values through transparent visual education.",
-      caseStudyUrl: "/work/etherea",
     },
   });
 

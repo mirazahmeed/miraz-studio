@@ -126,24 +126,24 @@ export function ProjectShowcase({
     );
   }
 
-  // 3. LAYERED E-COMMERCE VARIANT (ROSELYRA + ETHEREA / E-commerce & Digital Experiences)
+  // 3. LAYERED E-COMMERCE VARIANT (E-commerce & Digital Experiences)
   if (variant === "layered-ecommerce") {
     return (
       <div className="relative w-full h-full min-h-[290px] sm:min-h-[320px] flex items-center justify-center p-3 sm:p-5 bg-[#FAFAF9] rounded-2xl border border-[#E6E6E4] overflow-hidden group/layered select-none">
         {/* Layered Multi-Project Showcase Container */}
         <div className="relative w-full max-w-[480px] h-[255px] sm:h-[280px] flex items-center justify-center">
-          {/* Secondary Stacked Card (Etherea behind, offset right & top) */}
+          {/* Secondary Stacked Card (behind, offset right & top) */}
           {secondaryImage && (
             <div className="absolute right-2 sm:right-6 top-3 w-[60%] h-[200px] sm:h-[220px] rounded-xl border border-[#E6E6E4] bg-white shadow-md overflow-hidden opacity-70 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/layered:translate-x-2 group-hover/layered:opacity-90">
               <div className="h-5 bg-[#FAFAF9] border-b border-[#E6E6E4] px-2 flex items-center">
                 <span className="text-[8px] font-mono text-[#71717A]">
-                  ETHEREA SKINCARE
+                  SECONDARY PROJECT
                 </span>
               </div>
               <div className="relative w-full h-full">
                 <Image
                   src={secondaryImage}
-                  alt="Etherea project preview"
+                  alt="Secondary project preview"
                   fill
                   sizes="30vw"
                   className="object-cover object-top"
@@ -187,7 +187,7 @@ export function ProjectShowcase({
     );
   }
 
-  // 4. LONG-PAGE SCROLLING VARIANT (ETHEREA / Interactive Experiences - LARGE FEATURED CARD)
+  // 4. LONG-PAGE SCROLLING VARIANT (Interactive Experiences - LARGE FEATURED CARD)
   if (variant === "long-page") {
     return (
       <div className="relative w-full h-full min-h-[420px] sm:min-h-[500px] lg:min-h-[540px] flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-[#FAFAF9] rounded-2xl border border-[#E6E6E4] overflow-hidden group/featured select-none">
@@ -224,7 +224,7 @@ export function ProjectShowcase({
           </div>
         </div>
 
-        {/* Centered Device / Browser Viewport Frame for ETHEREA */}
+        {/* Centered Device / Browser Viewport Frame */}
         <div className="relative z-20 w-[300px] sm:w-[350px] md:w-[380px] h-[360px] sm:h-[440px] lg:h-[460px] rounded-2xl border border-[#111111]/20 bg-white shadow-[0_24px_60px_rgba(0,0,0,0.12)] group-hover/featured:shadow-[0_32px_72px_rgba(0,0,0,0.16)] transition-all duration-700 overflow-hidden flex flex-col">
           {/* Top Browser / Device Bar */}
           <div className="px-3.5 py-2 bg-white border-b border-[#E6E6E4] flex items-center justify-between select-none">
@@ -234,7 +234,7 @@ export function ProjectShowcase({
               <div className="w-2 h-2 rounded-full bg-[#E5E5E5] border border-[#D4D4D4]" />
             </div>
             <span className="text-[10px] font-mono text-[#71717A]">
-              etherea.organics / flagship
+              {url || title}
             </span>
             <span className="w-3" />
           </div>

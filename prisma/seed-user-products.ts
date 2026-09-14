@@ -204,50 +204,6 @@ const products = [
     solution:
       "A blazing-fast, secure file utility suite that guarantees 100% confidentiality, zero cloud bandwidth costs, and instant local processing.",
   },
-  {
-    title: "ETHEREA — Luxury Botanical Skincare",
-    slug: "etherea",
-    subtitle: "Editorial high-end botanical skincare e-commerce with testing sandbox & MongoDB Atlas admin dashboard",
-    excerpt:
-      "An editorial, high-end botanical skincare e-commerce web application featuring a curated storefront, interactive ingredient showcases, and customer rituals.",
-    description:
-      "An editorial, high-end botanical skincare e-commerce web application featuring a curated storefront, interactive ingredient showcases, and customer rituals. It includes a slide-out botanical cart drawer, customer profile and order history portal (/profile), a buyer/client testing sandbox (/testing-admin), and a secure store administration dashboard (/admin) for live product catalogue, inventory, and order fulfillment management backed by MongoDB Atlas.",
-    technologies: JSON.stringify([
-      "Next.js",
-      "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "MongoDB",
-      "Framer Motion",
-      "Lucide React",
-      "Canvas Confetti",
-      "Node.js",
-    ]),
-    liveUrl: null,
-    githubUrl: "https://github.com/mirazahmeed/etherea",
-    heroImage: "/projects/etherea.png",
-    featured: true,
-    category: "WEBSITES",
-    type: "BOTANICAL E-COMMERCE",
-    role: "FULL-STACK ARCHITECTURE / UI/UX / BACKEND",
-    client: "Etherea Botanicals",
-    year: "2026",
-    sortOrder: 7,
-    specifications: JSON.stringify({
-      cart: "Slide-Out Botanical Cart Drawer",
-      portal: "Customer Profile & Order History (/profile)",
-      sandbox: "Buyer / Client Testing Sandbox (/testing-admin)",
-      admin: "Store Administration & Inventory Dashboard (/admin)",
-      database: "MongoDB Atlas Cluster",
-      motion: "Framer Motion & Canvas Confetti Celebrations",
-    }),
-    challenge:
-      "Creating a sensory, editorial beauty buying experience while ensuring robust cart persistence, customer account management, and real-time inventory administration.",
-    approach:
-      "Constructed an integrated full-stack Next.js application backed by MongoDB Atlas with dedicated client testing sandboxes and seamless drawer shopping.",
-    solution:
-      "A luxury e-commerce platform blending serene aesthetic pacing with complete administrative power, real-time inventory management, and zero customer friction.",
-  },
 ];
 
 async function main() {

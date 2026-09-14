@@ -38,16 +38,13 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
   const roselyraProject = projects.find(
     (p) => p.slug === "roselyra-fashion" || p.slug === "roselyra"
   );
-  const ethereaProject = projects.find((p) => p.slug === "etherea");
 
   const fexionSlug =
     fexionProject?.slug || "project-fission-fashion-e-commerce-web-app";
   const roselyraSlug = roselyraProject?.slug || "roselyra-fashion";
-  const ethereaSlug = ethereaProject?.slug || "etherea";
 
   const fexionImg = fexionProject?.heroImage || "/projects/fission.png";
   const roselyraImg = roselyraProject?.heroImage || "/projects/roselyra.png";
-  const ethereaImg = ethereaProject?.heroImage || "/projects/etherea.png";
 
   return (
     <section
@@ -179,7 +176,7 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
           </div>
 
           {/* ========================================================
-              CARD 03: E-COMMERCE & DIGITAL EXPERIENCES (ROSELYRA + ETHEREA)
+              CARD 03: E-COMMERCE & DIGITAL EXPERIENCES (ROSELYRA)
           ======================================================== */}
           <div className="group rounded-[28px] border border-[#E6E6E4] bg-white p-6 sm:p-8 flex flex-col justify-between transition-all duration-500 hover:border-[#111111]/30 hover:shadow-[0_16px_40px_rgba(0,0,0,0.06)] hover:-translate-y-1">
             {/* Upper Area: Explanation */}
@@ -202,7 +199,7 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
               </p>
             </div>
 
-            {/* Lower Area: Layered Real Project Proof (Roselyra + Etherea) */}
+            {/* Lower Area: Roselyra Project Proof */}
             <div className="relative mt-auto">
               <Link
                 href={`/work/${roselyraSlug}`}
@@ -212,7 +209,6 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
                 <ProjectShowcase
                   variant="layered-ecommerce"
                   primaryImage={roselyraImg}
-                  secondaryImage={ethereaImg}
                   title="E-commerce Flagships"
                   statusLabel="E-commerce"
                 />
@@ -304,27 +300,27 @@ export function ServicesSection({ projects = [] }: ServicesSectionProps) {
 
               <div className="flex items-center gap-4">
                 <Link
-                  href="/work/etherea"
+                  href={`/work/${fexionSlug}`}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#111111] text-white text-[12px] font-medium tracking-tight hover:bg-[#333333] transition-colors shadow-xs"
                 >
-                  <span>Explore Etherea Case Study</span>
+                  <span>Explore Fexion Case Study</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
 
-            {/* Lower Area: Large Editorial Project Showcase of ETHEREA with Slow Vertical Scroll & "You" Cursor */}
+            {/* Lower Area: Large Editorial Project Showcase with Slow Vertical Scroll & "You" Cursor */}
             <div className="relative w-full">
               <Link
-                href="/work/etherea"
+                href={`/work/${fexionSlug}`}
                 className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] rounded-2xl"
-                aria-label="View Etherea interactive experience case study"
+                aria-label="View Fexion interactive experience case study"
               >
                 <ProjectShowcase
                   variant="long-page"
-                  primaryImage={ethereaImg}
-                  title="Etherea Botanical Skincare Flagship"
-                  url="etherea.organics / live-flagship"
+                  primaryImage={fexionImg}
+                  title="Fexion Fashion E-commerce"
+                  url="fexion.store / live-flagship"
                   statusLabel="Interactive Experience"
                   showCursor={true}
                 />
