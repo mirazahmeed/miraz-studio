@@ -1,3 +1,8 @@
+"use client";
+
+import { AnimateIn } from "@/components/ui/AnimateIn";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+
 interface TestimonialItem {
   id: string;
   name: string;
@@ -16,88 +21,106 @@ export function ProofAndTestimonials({ testimonials }: ProofAndTestimonialsProps
     <section className="py-24 sm:py-32 border-b border-[#E6E6E4] bg-[#FAFAF9]">
       <div className="studio-container">
         {/* Section Header */}
-        <div className="pb-8 mb-16 border-b border-[#E6E6E4]">
-          <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#71717A] block mb-3">
-            06 / PROOF & REPUTATION
-          </span>
-          <h2 className="text-[28px] sm:text-[38px] font-normal tracking-[-0.03em] text-[#111111] uppercase">
-            THE WORK SPEAKS FOR ITSELF
-          </h2>
-        </div>
+        <AnimateIn variant="fade-up" delay={0}>
+          <div className="pb-8 mb-16 border-b border-[#E6E6E4]">
+            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#71717A] block mb-3">
+              06 / PROOF & REPUTATION
+            </span>
+            <h2 className="text-[28px] sm:text-[38px] font-normal tracking-[-0.03em] text-[#111111] uppercase">
+              THE WORK SPEAKS FOR ITSELF
+            </h2>
+          </div>
+        </AnimateIn>
 
         {/* 4 Quantitative Proof Criteria */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 pb-20 border-b border-[#E6E6E4]">
-          <div className="space-y-2">
-            <span className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block">
-              99+
-            </span>
-            <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
-              LIGHTHOUSE SCORE
-            </span>
-            <p className="text-[12px] text-[#8E8E93] leading-normal">
-              Zero layout shifts, sub-second TTFB, and optimized server-rendered payloads.
-            </p>
-          </div>
+          <AnimateIn variant="fade-up" delay={0.05}>
+            <div className="space-y-2">
+              <AnimatedCounter
+                value="99+"
+                className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block"
+              />
+              <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
+                LIGHTHOUSE SCORE
+              </span>
+              <p className="text-[12px] text-[#8E8E93] leading-normal">
+                Zero layout shifts, sub-second TTFB, and optimized server-rendered payloads.
+              </p>
+            </div>
+          </AnimateIn>
 
-          <div className="space-y-2">
-            <span className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block">
-              100%
-            </span>
-            <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
-              TYPESCRIPT STRICT
-            </span>
-            <p className="text-[12px] text-[#8E8E93] leading-normal">
-              Type-safe end-to-end schemas from database queries to client components.
-            </p>
-          </div>
+          <AnimateIn variant="fade-up" delay={0.15}>
+            <div className="space-y-2">
+              <AnimatedCounter
+                value="100%"
+                className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block"
+              />
+              <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
+                TYPESCRIPT STRICT
+              </span>
+              <p className="text-[12px] text-[#8E8E93] leading-normal">
+                Type-safe end-to-end schemas from database queries to client components.
+              </p>
+            </div>
+          </AnimateIn>
 
-          <div className="space-y-2">
-            <span className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block">
-              60 FPS
-            </span>
-            <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
-              ANIMATION FLUIDITY
-            </span>
-            <p className="text-[12px] text-[#8E8E93] leading-normal">
-              Hardware-accelerated transforms and GPU-optimized micro-interactions.
-            </p>
-          </div>
+          <AnimateIn variant="fade-up" delay={0.25}>
+            <div className="space-y-2">
+              <AnimatedCounter
+                value="60 FPS"
+                className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block"
+              />
+              <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
+                ANIMATION FLUIDITY
+              </span>
+              <p className="text-[12px] text-[#8E8E93] leading-normal">
+                Hardware-accelerated transforms and GPU-optimized micro-interactions.
+              </p>
+            </div>
+          </AnimateIn>
 
-          <div className="space-y-2">
-            <span className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block">
-              WCAG AA
-            </span>
-            <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
-              ACCESSIBILITY LEVEL
-            </span>
-            <p className="text-[12px] text-[#8E8E93] leading-normal">
-              High-contrast typography, semantic ARIA roles, and complete keyboard navigation.
-            </p>
-          </div>
+          <AnimateIn variant="fade-up" delay={0.35}>
+            <div className="space-y-2">
+              <AnimatedCounter
+                value="WCAG AA"
+                className="text-[32px] sm:text-[40px] font-normal tracking-tight text-[#111111] block"
+              />
+              <span className="text-[11px] uppercase font-mono tracking-widest text-[#71717A] block">
+                ACCESSIBILITY LEVEL
+              </span>
+              <p className="text-[12px] text-[#8E8E93] leading-normal">
+                High-contrast typography, semantic ARIA roles, and complete keyboard navigation.
+              </p>
+            </div>
+          </AnimateIn>
         </div>
 
         {/* Editorial Testimonials Grid */}
         <div className="pt-16">
-          <span className="text-[10px] uppercase font-mono tracking-widest text-[#8E8E93] block mb-10">
-            [ PEER & CLIENT ENDORSEMENTS ]
-          </span>
+          <AnimateIn variant="fade-up" delay={0}>
+            <span className="text-[10px] uppercase font-mono tracking-widest text-[#8E8E93] block mb-10">
+              [ PEER & CLIENT ENDORSEMENTS ]
+            </span>
+          </AnimateIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {testimonials.map((t) => (
-              <div key={t.id} className="space-y-6 flex flex-col justify-between">
-                <blockquote className="text-[15px] text-[#333333] font-light leading-relaxed italic">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
+            {testimonials.map((t, idx) => (
+              <AnimateIn key={t.id} variant="fade-up" delay={0.1 + idx * 0.12}>
+                <div className="space-y-6 flex flex-col justify-between">
+                  <blockquote className="text-[15px] text-[#333333] font-light leading-relaxed italic">
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
 
-                <div className="pt-4 border-t border-[#E6E6E4]">
-                  <span className="block text-[12px] font-medium uppercase tracking-[0.1em] text-[#111111]">
-                    {t.name}
-                  </span>
-                  <span className="block text-[11px] text-[#71717A] font-mono tracking-wider mt-0.5">
-                    {t.role} • {t.company}
-                  </span>
+                  <div className="pt-4 border-t border-[#E6E6E4]">
+                    <span className="block text-[12px] font-medium uppercase tracking-[0.1em] text-[#111111]">
+                      {t.name}
+                    </span>
+                    <span className="block text-[11px] text-[#71717A] font-mono tracking-wider mt-0.5">
+                      {t.role} • {t.company}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </AnimateIn>
             ))}
           </div>
         </div>

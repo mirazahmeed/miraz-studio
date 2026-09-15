@@ -14,7 +14,7 @@ export function ProjectEditor({ initialData }: ProjectEditorProps) {
   const isEditing = !!initialData;
   const [heroImage, setHeroImage] = useState(
     initialData?.heroImage ||
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85"
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1800&q=85"
   );
 
   let techString = "";

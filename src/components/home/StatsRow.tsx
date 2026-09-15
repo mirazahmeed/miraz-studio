@@ -1,3 +1,8 @@
+"use client";
+
+import { AnimateIn } from "@/components/ui/AnimateIn";
+import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
+
 interface StatItem {
   label: string;
   value: string;
@@ -21,8 +26,10 @@ export function StatsRow({
       <div className="studio-container">
         <div className="grid grid-cols-2 md:grid-cols-4">
           {stats.map((stat, idx) => (
-            <div
+            <AnimateIn
               key={stat.label}
+              variant="fade-up"
+              delay={0.1 + idx * 0.12}
               className={`py-8 sm:py-10 px-4 sm:px-8 flex flex-col justify-between ${
                 idx !== stats.length - 1 ? "md:border-r border-[#E6E6E4]" : ""
               } ${idx % 2 === 0 ? "border-r md:border-r" : ""} ${
@@ -40,11 +47,12 @@ export function StatsRow({
                   className="w-1.5 h-7 sm:h-8 rounded-[1px]"
                   style={{ backgroundColor: stat.color }}
                 />
-                <span className="text-[34px] sm:text-[44px] font-normal tracking-[-0.04em] text-[#111111] leading-none">
-                  {stat.value}
-                </span>
+                <AnimatedCounter
+                  value={stat.value}
+                  className="text-[34px] sm:text-[44px] font-normal tracking-[-0.04em] text-[#111111] leading-none"
+                />
               </div>
-            </div>
+            </AnimateIn>
           ))}
         </div>
       </div>

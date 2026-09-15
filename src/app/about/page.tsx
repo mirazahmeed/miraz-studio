@@ -29,8 +29,8 @@ export default async function AboutPage() {
           {/* Large Studio Image */}
           <div className="relative w-full aspect-16/8 overflow-hidden rounded-[2px] border border-[#E6E6E4] bg-neutral-100 mb-20">
             <Image
-              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85"
-              alt="Studio environment"
+              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1800&q=85"
+              alt="Studio development environment"
               fill
               priority
               className="object-cover"

@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { AnimateIn } from "@/components/ui/AnimateIn";
 
 interface ProjectData {
   id: string;
@@ -50,37 +53,41 @@ export function FeaturedProjectSection({
     <section className="py-20 sm:py-28 border-b border-[#E6E6E4] bg-white">
       <div className="studio-container">
         {/* Top Metadata Header */}
-        <div className="flex justify-between items-center pb-6 mb-10 border-b border-[#E6E6E4]">
-          <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#71717A]">
-            {indexText}
-          </span>
-          <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#111111]">
-            CASE STUDY Monograph
-          </span>
-        </div>
+        <AnimateIn variant="fade-up" delay={0}>
+          <div className="flex justify-between items-center pb-6 mb-10 border-b border-[#E6E6E4]">
+            <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#71717A]">
+              {indexText}
+            </span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#111111]">
+              CASE STUDY Monograph
+            </span>
+          </div>
+        </AnimateIn>
 
         {/* Large Immersive Hero Image with Architectural Treatment */}
-        <div className="relative w-full aspect-16/9 md:aspect-21/9 overflow-hidden bg-neutral-100 rounded-[2px] border border-[#E6E6E4] group mb-14">
-          <Image
-            src={project.heroImage}
-            alt={project.title}
-            fill
-            priority
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-            sizes="(max-width: 1536px) 100vw, 1500px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
+        <AnimateIn variant="scale-up" delay={0.1} duration={0.8}>
+          <div className="relative w-full aspect-16/9 md:aspect-21/9 overflow-hidden bg-neutral-100 rounded-[2px] border border-[#E6E6E4] group mb-14">
+            <Image
+              src={project.heroImage}
+              alt={project.title}
+              fill
+              priority
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+              sizes="(max-width: 1536px) 100vw, 1500px"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
 
-          {/* Inline badge over image */}
-          <div className="absolute bottom-6 left-6 sm:left-8 bg-white/90 backdrop-blur-md px-4 py-2 border border-[#E6E6E4] text-[11px] font-medium uppercase tracking-[0.14em] text-[#111111]">
-            {project.type} • {project.year}
+            {/* Inline badge over image */}
+            <div className="absolute bottom-6 left-6 sm:left-8 bg-white/90 backdrop-blur-md px-4 py-2 border border-[#E6E6E4] text-[11px] font-medium uppercase tracking-[0.14em] text-[#111111]">
+              {project.type} • {project.year}
+            </div>
           </div>
-        </div>
+        </AnimateIn>
 
         {/* 2-Column Technical Specifications & Project Brief */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 pt-4">
           {/* Left Column (Span 7): Detailed Project Specification Table */}
-          <div className="lg:col-span-7">
+          <AnimateIn variant="fade-left" delay={0.2} className="lg:col-span-7">
             <h3 className="text-[26px] sm:text-[34px] font-normal tracking-[-0.03em] uppercase text-[#111111] mb-8">
               PROJECT: {project.title}
             </h3>
@@ -150,10 +157,10 @@ export function FeaturedProjectSection({
                 </div>
               ))}
             </div>
-          </div>
+          </AnimateIn>
 
           {/* Right Column (Span 5): Editorial Narrative & Action Callout */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-8">
+          <AnimateIn variant="fade-right" delay={0.3} className="lg:col-span-5 flex flex-col justify-between space-y-8">
             <div className="space-y-4">
               <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#71717A]">
                 EXECUTIVE SUMMARY
@@ -208,7 +215,7 @@ export function FeaturedProjectSection({
                 )}
               </div>
             </div>
-          </div>
+          </AnimateIn>
         </div>
       </div>
     </section>
