@@ -10,6 +10,11 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   const { id } = await params;
   const project = await prisma.project.findUnique({
     where: { id },
+    include: {
+      gallery: {
+        orderBy: { sortOrder: "asc" },
+      },
+    },
   });
 
   if (!project) {
@@ -18,7 +23,10 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
   return (
     <div>
-      <ProjectEditor initialData={project} />
+      <ProjectEditor
+        initialData={project}
+        galleryImages={project.gallery}
+      />
     </div>
   );
 }

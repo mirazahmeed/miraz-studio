@@ -7,10 +7,11 @@ import {
   Mail,
   ArrowUpRight,
   Plus,
+  AlertTriangle,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-  const [totalProjects, publishedProjects, draftProjects, totalMessages, recentProjects] =
+  const [totalProjects, publishedProjects, draftProjects, totalMessages, recentProjects, allProjects] =
     await Promise.all([
       prisma.project.count(),
       prisma.project.count({ where: { status: "PUBLISHED" } }),
@@ -20,7 +21,27 @@ export default async function AdminDashboardPage() {
         orderBy: { updatedAt: "desc" },
         take: 5,
       }),
+      prisma.project.findMany({
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          challenge: true,
+          approach: true,
+          solution: true,
+          results: true,
+          excerpt: true,
+          description: true,
+        },
+      }),
     ]);
+
+  // Find projects with incomplete case studies
+  const incompleteProjects = allProjects.filter((p) => {
+    const caseStudyFields = [p.challenge, p.approach, p.solution, p.results];
+    const filled = caseStudyFields.filter(Boolean).length;
+    return filled < 4 && p.status === "PUBLISHED";
+  });
 
   const stats = [
     {
@@ -79,6 +100,33 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Incomplete Case Studies Alert */}
+      {incompleteProjects.length > 0 && (
+        <div className="p-5 bg-amber-50 border border-amber-200 rounded-[3px] space-y-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-600" />
+            <span className="text-[13px] font-medium text-amber-800">
+              {incompleteProjects.length} published project{incompleteProjects.length > 1 ? "s" : ""} with incomplete case studies
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {incompleteProjects.slice(0, 5).map((p) => {
+              const filled = [p.challenge, p.approach, p.solution, p.results].filter(Boolean).length;
+              return (
+                <Link
+                  key={p.id}
+                  href={`/admin/projects/${p.id}`}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-amber-200 text-[11px] font-medium text-amber-800 rounded-[2px] hover:bg-amber-100 transition-colors"
+                >
+                  <span>{p.title}</span>
+                  <span className="text-[9px] font-mono text-amber-600">{filled}/4</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((s) => {
@@ -101,6 +149,41 @@ export default async function AdminDashboardPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Link
+          href="/admin/projects/new"
+          className="p-5 bg-white border border-[#E6E6E4] hover:border-[#CCCCCC] hover:bg-neutral-50 transition-colors space-y-2 group"
+        >
+          <Plus className="w-5 h-5 text-[#71717A] group-hover:text-[#111111] transition-colors" />
+          <h3 className="text-[14px] font-medium uppercase text-[#111111]">Create Project</h3>
+          <p className="text-[12px] text-[#71717A]">Add a new case study to your portfolio</p>
+        </Link>
+        <Link
+          href="/admin/messages"
+          className="p-5 bg-white border border-[#E6E6E4] hover:border-[#CCCCCC] hover:bg-neutral-50 transition-colors space-y-2 group"
+        >
+          <Mail className="w-5 h-5 text-[#71717A] group-hover:text-[#111111] transition-colors" />
+          <h3 className="text-[14px] font-medium uppercase text-[#111111]">
+            Check Inbox
+            {totalMessages > 0 && (
+              <span className="ml-2 text-[10px] font-mono bg-[#111111] text-white px-1.5 py-0.5 rounded-full">
+                {totalMessages}
+              </span>
+            )}
+          </h3>
+          <p className="text-[12px] text-[#71717A]">Review client inquiries and contact submissions</p>
+        </Link>
+        <Link
+          href="/admin/settings"
+          className="p-5 bg-white border border-[#E6E6E4] hover:border-[#CCCCCC] hover:bg-neutral-50 transition-colors space-y-2 group"
+        >
+          <FileEdit className="w-5 h-5 text-[#71717A] group-hover:text-[#111111] transition-colors" />
+          <h3 className="text-[14px] font-medium uppercase text-[#111111]">Edit Site Copy</h3>
+          <p className="text-[12px] text-[#71717A]">Update hero text, stats, and contact details</p>
+        </Link>
       </div>
 
       {/* Recent Projects Table */}

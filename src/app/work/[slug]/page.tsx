@@ -212,6 +212,66 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               )}
+
+              {project.appStoreUrl && (
+                <a
+                  href={project.appStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-white border border-[#E6E6E4] hover:bg-neutral-100 text-[#111111] text-[11px] font-medium uppercase tracking-[0.14em] rounded-full transition-colors flex items-center gap-2"
+                >
+                  <span>APP STORE</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              {project.playStoreUrl && (
+                <a
+                  href={project.playStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-white border border-[#E6E6E4] hover:bg-neutral-100 text-[#111111] text-[11px] font-medium uppercase tracking-[0.14em] rounded-full transition-colors flex items-center gap-2"
+                >
+                  <span>GOOGLE PLAY</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              {project.productHuntUrl && (
+                <a
+                  href={project.productHuntUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-white border border-[#E6E6E4] hover:bg-neutral-100 text-[#111111] text-[11px] font-medium uppercase tracking-[0.14em] rounded-full transition-colors flex items-center gap-2"
+                >
+                  <span>PRODUCT HUNT</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              {project.behanceUrl && (
+                <a
+                  href={project.behanceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-white border border-[#E6E6E4] hover:bg-neutral-100 text-[#111111] text-[11px] font-medium uppercase tracking-[0.14em] rounded-full transition-colors flex items-center gap-2"
+                >
+                  <span>BEHANCE</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+
+              {project.dribbbleUrl && (
+                <a
+                  href={project.dribbbleUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-white border border-[#E6E6E4] hover:bg-neutral-100 text-[#111111] text-[11px] font-medium uppercase tracking-[0.14em] rounded-full transition-colors flex items-center gap-2"
+                >
+                  <span>DRIBBBLE</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -308,6 +368,34 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   </h2>
                   <p className="text-[15px] sm:text-[16px] text-[#444444] font-light leading-relaxed">
                     {project.results}
+                  </p>
+                </div>
+              )}
+
+              {project.process && (
+                <div className="space-y-4 pt-8 border-t border-[#E6E6E4]">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#71717A] block">
+                    05 / THE DESIGN PROCESS
+                  </span>
+                  <h2 className="text-[24px] sm:text-[30px] font-normal tracking-tight uppercase text-[#111111]">
+                    FROM CONCEPT TO COMPLETION
+                  </h2>
+                  <p className="text-[15px] sm:text-[16px] text-[#444444] font-light leading-relaxed">
+                    {project.process}
+                  </p>
+                </div>
+              )}
+
+              {project.learnings && (
+                <div className="space-y-4 pt-8 border-t border-[#E6E6E4]">
+                  <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#71717A] block">
+                    06 / KEY LEARNINGS
+                  </span>
+                  <h2 className="text-[24px] sm:text-[30px] font-normal tracking-tight uppercase text-[#111111]">
+                    INSIGHTS & TAKEAWAYS
+                  </h2>
+                  <p className="text-[15px] sm:text-[16px] text-[#444444] font-light leading-relaxed">
+                    {project.learnings}
                   </p>
                 </div>
               )}

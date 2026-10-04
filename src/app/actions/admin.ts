@@ -65,12 +65,21 @@ export async function saveProjectAction(formData: FormData) {
   const challenge = (formData.get("challenge") as string) || null;
   const approach = (formData.get("approach") as string) || null;
   const solution = (formData.get("solution") as string) || null;
+  const process = (formData.get("process") as string) || null;
   const results = (formData.get("results") as string) || null;
   const learnings = (formData.get("learnings") as string) || null;
   const liveUrl = (formData.get("liveUrl") as string) || null;
   const githubUrl = (formData.get("githubUrl") as string) || null;
   const figmaUrl = (formData.get("figmaUrl") as string) || null;
   const caseStudyUrl = (formData.get("caseStudyUrl") as string) || null;
+  const appStoreUrl = (formData.get("appStoreUrl") as string) || null;
+  const playStoreUrl = (formData.get("playStoreUrl") as string) || null;
+  const productHuntUrl = (formData.get("productHuntUrl") as string) || null;
+  const behanceUrl = (formData.get("behanceUrl") as string) || null;
+  const dribbbleUrl = (formData.get("dribbbleUrl") as string) || null;
+  const specifications = (formData.get("specifications") as string) || null;
+  const seoTitle = (formData.get("seoTitle") as string) || null;
+  const seoDescription = (formData.get("seoDescription") as string) || null;
 
   const dataPayload = {
     title,
@@ -92,21 +101,31 @@ export async function saveProjectAction(formData: FormData) {
     challenge,
     approach,
     solution,
+    process,
     results,
     learnings,
     liveUrl,
     githubUrl,
     figmaUrl,
     caseStudyUrl,
+    appStoreUrl,
+    playStoreUrl,
+    productHuntUrl,
+    behanceUrl,
+    dribbbleUrl,
+    specifications,
+    seoTitle,
+    seoDescription,
   };
 
+  let savedProject;
   if (id) {
-    await prisma.project.update({
+    savedProject = await prisma.project.update({
       where: { id },
       data: dataPayload,
     });
   } else {
-    await prisma.project.create({
+    savedProject = await prisma.project.create({
       data: dataPayload,
     });
   }
@@ -115,7 +134,9 @@ export async function saveProjectAction(formData: FormData) {
   revalidatePath("/work");
   revalidatePath(`/work/${slug}`);
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+  revalidatePath(`/admin/projects/${savedProject.id}`);
+
+  return { success: true, id: savedProject.id };
 }
 
 export async function deleteProjectAction(id: string) {
@@ -191,4 +212,74 @@ export async function deleteMessageAction(id: string) {
 
   await prisma.contactMessage.delete({ where: { id } });
   revalidatePath("/admin/messages");
+}
+
+// ─── Gallery Actions ───
+
+export async function addGalleryImageAction(
+  projectId: string,
+  imageUrl: string,
+  caption: string | null,
+  alt: string | null
+) {
+  const session = await getAdminSession();
+  if (!session) throw new Error("Unauthorized");
+
+  // Get current max sort order
+  const maxOrder = await prisma.projectGallery.findFirst({
+    where: { projectId },
+    orderBy: { sortOrder: "desc" },
+    select: { sortOrder: true },
+  });
+
+  await prisma.projectGallery.create({
+    data: {
+      projectId,
+      imageUrl,
+      caption,
+      alt,
+      sortOrder: (maxOrder?.sortOrder ?? -1) + 1,
+    },
+  });
+
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath("/work", "layout");
+}
+
+export async function deleteGalleryImageAction(imageId: string) {
+  const session = await getAdminSession();
+  if (!session) throw new Error("Unauthorized");
+
+  const image = await prisma.projectGallery.findUnique({
+    where: { id: imageId },
+    select: { projectId: true },
+  });
+
+  await prisma.projectGallery.delete({ where: { id: imageId } });
+
+  if (image) {
+    revalidatePath(`/admin/projects/${image.projectId}`);
+    revalidatePath("/work", "layout");
+  }
+}
+
+export async function reorderGalleryAction(
+  projectId: string,
+  orderedIds: string[]
+) {
+  const session = await getAdminSession();
+  if (!session) throw new Error("Unauthorized");
+
+  // Update sort order for each image
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      prisma.projectGallery.update({
+        where: { id },
+        data: { sortOrder: index },
+      })
+    )
+  );
+
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath("/work", "layout");
 }
