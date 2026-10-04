@@ -17,6 +17,7 @@ export interface CaseStudyContext {
   technologies: string;
   excerpt: string;
   description: string;
+  existingSections?: Record<string, string>;
 }
 
 export interface CaseStudyResult {
@@ -27,6 +28,42 @@ export interface CaseStudyResult {
   results: string;
   learnings: string;
 }
+
+export const SECTION_METADATA: Record<
+  string,
+  { label: string; prompt: string }
+> = {
+  challenge: {
+    label: "THE PROBLEM & CHALLENGE",
+    prompt:
+      "Describe the core problem the client was facing. What pain points existed? What wasn't working? Be specific about the business impact and the gap between where they were and where they needed to be.",
+  },
+  approach: {
+    label: "THE STRATEGY & APPROACH",
+    prompt:
+      "Explain the strategic thinking and methodology. What frameworks or methods were used? How was the problem broken down? What trade-offs were considered? Show the thought process behind the decisions.",
+  },
+  solution: {
+    label: "THE TECHNICAL SOLUTION",
+    prompt:
+      "Detail the technical implementation. What architecture decisions were made and why? What specific tools and technologies were leveraged? Focus on the engineering craft and design rationale.",
+  },
+  process: {
+    label: "THE DESIGN PROCESS",
+    prompt:
+      "Walk through the design and development process phase by phase. How did the team iterate? Include any pivots, discoveries, or key collaboration moments that shaped the outcome.",
+  },
+  results: {
+    label: "MEASURABLE OUTCOMES & RESULTS",
+    prompt:
+      "Share measurable outcomes and impact. Use plausible specific numbers: performance improvements, load times, user adoption metrics, conversion rates, or cost savings. Mark any estimated metrics with approximate language like 'approximately' or 'projected'.",
+  },
+  learnings: {
+    label: "KEY LEARNINGS & TAKEAWAYS",
+    prompt:
+      "Reflect on key takeaways from the project. What would be done differently? What was surprising? What insight would be valuable for future projects? Be honest and introspective.",
+  },
+};
 
 // ─── Prompt Template ───
 
@@ -167,3 +204,149 @@ export async function generateCaseStudy(
     );
   }
 }
+
+// ─── Single Section Generation ───
+
+function buildSingleSectionPrompt(
+  context: CaseStudyContext,
+  section: string
+): string {
+  const meta = SECTION_METADATA[section];
+  const sectionLabel = meta?.label || section.toUpperCase();
+  const sectionGuidance = meta?.prompt || "";
+
+  // Optional existing sections for tone harmony
+  const existingOtherSections = context.existingSections
+    ? Object.entries(context.existingSections)
+        .filter(([k, v]) => k !== section && typeof v === "string" && v.trim())
+        .map(([k, v]) => `- Other Section (${k.toUpperCase()}): "${v.trim().slice(0, 300)}..."`)
+        .join("\n")
+    : "";
+
+  return `You are a senior creative technologist and portfolio copywriter for a premium design & development studio called "MIRAZ STUDIO™".
+
+Your writing style is:
+- Confident, precise, and slightly editorial
+- Technical but accessible — you explain complex decisions clearly
+- Uses active voice and strong verbs
+- Never uses generic filler, buzzwords, or clichés
+- Every sentence adds specific value
+- Professional but not corporate — you sound like a skilled craftsman proud of their work
+
+PROJECT CONTEXT:
+- Project Title: ${context.title}
+- Client: ${context.client}
+- Project Type: ${context.type}
+- My Role: ${context.role}
+- Category: ${context.category}
+${context.duration ? `- Duration: ${context.duration}` : ""}
+- Technology Stack: ${context.technologies}
+- Brief Overview: ${context.excerpt}
+- Full Description: ${context.description}
+${existingOtherSections ? `\nEXISTING SECTIONS CONTEXT:\n${existingOtherSections}\n` : ""}
+
+TASK: Write ONLY the "${sectionLabel}" section for this project.
+Section Objective: ${sectionGuidance}
+
+Format requirements:
+- Write 2-3 concise paragraphs of plain text (no markdown, no bullet points, no headers)
+- Write in first person plural ("we") perspective
+- Be specific to THIS project's context — reference actual technologies, client name, and technical choices
+${section === "results" ? "- Use plausible but clearly approximate metrics based on the project type\n" : ""}
+Return your response as a valid JSON object with exactly this key:
+
+{
+  "${section}": "Your 2-3 paragraphs here..."
+}
+
+IMPORTANT:
+- Return ONLY the raw JSON object, no markdown code fences, no explanation
+- Do NOT wrap the JSON in \`\`\`json code blocks`;
+}
+
+export async function generateSingleCaseStudySection(
+  context: CaseStudyContext,
+  section: string
+): Promise<{ [key: string]: string }> {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      "GEMINI_API_KEY is not configured. Add it to your .env file."
+    );
+  }
+
+  if (!context.title?.trim() || !context.type?.trim() || !context.description?.trim()) {
+    throw new Error(
+      "Insufficient project context. Title, type, and description are required to generate a case study."
+    );
+  }
+
+  if (!SECTION_METADATA[section]) {
+    throw new Error(`Invalid section requested: ${section}`);
+  }
+
+  const prompt = buildSingleSectionPrompt(context, section);
+
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [{ text: prompt }],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.8,
+        topP: 0.95,
+        maxOutputTokens: 2048,
+        responseMimeType: "application/json",
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Gemini API error:", response.status, errorBody);
+
+    if (response.status === 429) {
+      throw new Error("AI rate limit reached. Please wait a moment and try again.");
+    }
+    if (response.status === 401 || response.status === 403) {
+      throw new Error("Invalid Gemini API key. Check your GEMINI_API_KEY in .env.");
+    }
+
+    throw new Error(`Gemini API error (${response.status}). Please try again.`);
+  }
+
+  const data = await response.json();
+  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if (!rawText) {
+    console.error("Unexpected Gemini response structure:", JSON.stringify(data));
+    throw new Error("Received an empty response from AI. Please try again.");
+  }
+
+  try {
+    const cleanText = rawText
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    const parsed = JSON.parse(cleanText);
+
+    if (typeof parsed[section] !== "string" || !parsed[section].trim()) {
+      throw new Error(`Missing or empty field in AI response: ${section}`);
+    }
+
+    return { [section]: parsed[section].trim() };
+  } catch (parseError) {
+    console.error("Failed to parse Gemini response:", rawText);
+    throw new Error(
+      "AI generated an invalid response format. Please try again."
+    );
+  }
+}
+

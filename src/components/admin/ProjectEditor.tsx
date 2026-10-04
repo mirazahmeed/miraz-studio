@@ -192,6 +192,7 @@ export function ProjectEditor({ initialData, galleryImages = [] }: ProjectEditor
 
   // ─── AI Generation state ───
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatingField, setGeneratingField] = useState<string | null>(null);
 
   const draftKey = AUTOSAVE_KEY_PREFIX + (initialData?.id || "new");
 
@@ -267,6 +268,70 @@ export function ProjectEditor({ initialData, galleryImages = [] }: ProjectEditor
       setIsGenerating(false);
     }
   }, [formValues, canGenerate, hasExistingCaseStudy, updateField, toast, caseStudyFields]);
+
+  // ─── AI Single Field Generation ───
+  const handleGenerateField = useCallback(
+    async (fieldName: string) => {
+      if (!canGenerate) {
+        toast("error", "Please fill in the project title, type, and description first.");
+        return;
+      }
+
+      const existingValue = formValues[fieldName]?.trim();
+      if (existingValue) {
+        const confirmed = window.confirm(
+          "This will overwrite the current content for this section. Continue?"
+        );
+        if (!confirmed) return;
+      }
+
+      setGeneratingField(fieldName);
+
+      try {
+        const response = await fetch("/api/ai/generate-case-study", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: formValues.title,
+            client: formValues.client,
+            type: formValues.type,
+            role: formValues.role,
+            category: formValues.category,
+            duration: formValues.duration,
+            technologies: formValues.technologies,
+            excerpt: formValues.excerpt,
+            description: formValues.description,
+            section: fieldName,
+            existingSections: {
+              challenge: formValues.challenge,
+              approach: formValues.approach,
+              solution: formValues.solution,
+              process: formValues.process,
+              results: formValues.results,
+              learnings: formValues.learnings,
+            },
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to generate section.");
+        }
+
+        if (data[fieldName]) {
+          updateField(fieldName, data[fieldName]);
+          toast("success", "Section generated successfully!");
+        }
+      } catch (err: any) {
+        console.error("AI section generation error:", err);
+        toast("error", err.message || "Failed to generate section. Please try again.");
+      } finally {
+        setGeneratingField(null);
+      }
+    },
+    [formValues, canGenerate, updateField, toast]
+  );
 
   // ─── Autosave to localStorage ───
   useEffect(() => {
@@ -432,14 +497,46 @@ export function ProjectEditor({ initialData, galleryImages = [] }: ProjectEditor
     const prompt = WRITING_PROMPTS[name];
     const charCount = value.length;
     const [showPreview, setShowPreview] = useState(false);
+    const isThisFieldGenerating = generatingField === name;
 
     return (
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
           <label className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#71717A]">
             {label}
           </label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Field-level AI Regenerate / Generate Button */}
+            <button
+              type="button"
+              onClick={() => handleGenerateField(name)}
+              disabled={!canGenerate || isGenerating || !!generatingField}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[10px] font-semibold uppercase tracking-[0.08em] transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 border ${
+                isThisFieldGenerating
+                  ? "bg-violet-50 border-violet-300 text-violet-700"
+                  : "bg-white border-[#E6E6E4] text-[#111111] hover:bg-[#FAFAF9] hover:border-[#111111] active:scale-[0.98]"
+              }`}
+              title={
+                canGenerate
+                  ? value.trim()
+                    ? "Regenerate this section with AI"
+                    : "Generate this section with AI"
+                  : "Fill in title, type, and description first"
+              }
+            >
+              {isThisFieldGenerating ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin text-violet-600" />
+                  <span>GENERATING...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3 text-violet-600" />
+                  <span>{value.trim() ? "REGENERATE" : "GENERATE"}</span>
+                </>
+              )}
+            </button>
+
             <span
               className={`text-[10px] font-mono ${
                 charCount > 0 ? "text-[#555555]" : "text-[#B0B0AE]"
@@ -472,13 +569,28 @@ export function ProjectEditor({ initialData, galleryImages = [] }: ProjectEditor
             {value}
           </div>
         ) : (
-          <textarea
-            value={value}
-            onChange={(e) => updateField(name, e.target.value)}
-            rows={4}
-            placeholder={`Write your ${label.toLowerCase()} here...`}
-            className="w-full px-4 py-3 bg-white border border-[#E6E6E4] text-[#111111] text-[14px] focus:outline-none focus:border-[#111111] rounded-[2px] resize-y min-h-[100px] transition-colors"
-          />
+          <div className="relative">
+            <textarea
+              value={value}
+              onChange={(e) => updateField(name, e.target.value)}
+              rows={4}
+              disabled={isThisFieldGenerating}
+              placeholder={`Write your ${label.toLowerCase()} here...`}
+              className={`w-full px-4 py-3 bg-white border text-[#111111] text-[14px] focus:outline-none focus:border-[#111111] rounded-[2px] resize-y min-h-[100px] transition-colors ${
+                isThisFieldGenerating
+                  ? "border-violet-300 bg-violet-50/20"
+                  : "border-[#E6E6E4]"
+              }`}
+            />
+            {isThisFieldGenerating && (
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center rounded-[2px] transition-opacity">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-violet-200 rounded-[3px] shadow-sm text-[11px] font-medium text-violet-700">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-600" />
+                  Generating narrative with AI...
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     );
@@ -974,7 +1086,7 @@ export function ProjectEditor({ initialData, galleryImages = [] }: ProjectEditor
                           <button
                             type="button"
                             onClick={handleGenerateCaseStudy}
-                            disabled={!canGenerate || isGenerating}
+                            disabled={!canGenerate || isGenerating || !!generatingField}
                             className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[3px] text-[11px] font-semibold uppercase tracking-[0.12em] transition-all cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 bg-[#111111] text-white hover:bg-[#222222] active:scale-[0.98]"
                           >
                             {isGenerating ? (

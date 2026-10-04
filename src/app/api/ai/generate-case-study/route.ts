@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
-import { generateCaseStudy, type CaseStudyContext } from "@/lib/gemini";
+import {
+  generateCaseStudy,
+  generateSingleCaseStudySection,
+  SECTION_METADATA,
+  type CaseStudyContext,
+} from "@/lib/gemini";
 
 export async function POST(request: NextRequest) {
   // ─── Auth Check ───
@@ -13,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
 
   // ─── Parse Request Body ───
-  let body: CaseStudyContext;
+  let body: CaseStudyContext & { section?: string };
   try {
     body = await request.json();
   } catch {
@@ -34,20 +39,33 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const context: CaseStudyContext = {
+    title: body.title,
+    client: body.client || "Client",
+    type: body.type,
+    role: body.role || "Design & Development",
+    category: body.category || "WEBSITES",
+    duration: body.duration || undefined,
+    technologies: body.technologies || "",
+    excerpt: body.excerpt || "",
+    description: body.description,
+    existingSections: body.existingSections,
+  };
+
   // ─── Generate Case Study via Gemini ───
   try {
-    const result = await generateCaseStudy({
-      title: body.title,
-      client: body.client || "Client",
-      type: body.type,
-      role: body.role || "Design & Development",
-      category: body.category || "WEBSITES",
-      duration: body.duration || undefined,
-      technologies: body.technologies || "",
-      excerpt: body.excerpt || "",
-      description: body.description,
-    });
+    if (body.section) {
+      if (!SECTION_METADATA[body.section]) {
+        return NextResponse.json(
+          { error: `Invalid section requested: ${body.section}` },
+          { status: 400 }
+        );
+      }
+      const result = await generateSingleCaseStudySection(context, body.section);
+      return NextResponse.json(result);
+    }
 
+    const result = await generateCaseStudy(context);
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("[AI Generate Case Study] Error:", error.message);
